@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -42,4 +43,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function getUserAnswers($user){
+        $userAnswers = DB::table('answers')->where('user_id', $user->id)->get();
+        return $userAnswers;
+    }
+
+    public function getIsUserAdmin($user){
+        $isAdmin = DB::table('users')->where('id', $user->id)->where('Role', 'admin')->get();
+        return $isAdmin;
+    }
 }

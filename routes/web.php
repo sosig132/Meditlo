@@ -1,4 +1,10 @@
 <?php
+# Controllers
+use App\Livewire\Welcome;
+use App\Livewire\Home;
+use App\Livewire\Logout;
+use App\Livewire\AdminDashboard;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', Welcome::class);
+Route::get('/home', Home::class);
+Route::post('/logout', [Logout::class, 'logout']);
+Route::get('/admin-dashboard', AdminDashboard::class);
