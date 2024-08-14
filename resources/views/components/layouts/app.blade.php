@@ -9,6 +9,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <style>
+        .slide-enter-active, .slide-leave-active {
+            transition: transform 0.5s ease;
+        }
+
+        .slide-enter, .slide-leave-to {
+            transform: translateX(-100%);
+        }
+    </style>
+
 </head>
 <body>
     @include('components/navbar')
@@ -17,6 +27,9 @@
     {{ $slot }}
 
     @livewireScripts
-
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <x-livewire-alert::scripts />
 </body>
+
+
 </html>

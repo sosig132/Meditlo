@@ -49,8 +49,19 @@ class User extends Authenticatable
         return $userAnswers;
     }
 
+    public function getDifferentQuestionsAnswersCount($user){
+
+        $userAnswers = DB::table('answers')->join('possible_answers', 'answers.answer_id', '=', 'possible_answers.id')->where('user_id', $user->id)->get();
+        $userAnswersUnique = $userAnswers->unique('question_number');
+        return $userAnswersUnique->count();
+    }
+
     public function getIsUserAdmin($user){
         $isAdmin = DB::table('users')->where('id', $user->id)->where('Role', 'admin')->get();
         return $isAdmin;
+    }
+
+    public function isAdmin(){
+        return $this->role === 'admin';
     }
 }

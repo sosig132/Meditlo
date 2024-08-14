@@ -4,21 +4,25 @@
           <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
           </div>
+          @auth
           <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a>Home</a></li>
-            <li>
-              <a>Meditatii</a>
-            </li>
-          </ul>
+                <li><a>Home</a></li>
+                <li>
+                <a>Meditatii</a>
+                </li>
+            </ul>
+            @endauth
         </div>
         <a class="btn btn-ghost text-xl">Pick up</a>
       </div>
     <div class="navbar-center hidden lg:flex">
+        @auth
         <ul class="menu menu-horizontal px-1">
-            <li><a class="btn btn-ghost text-xl">Home</a></li>
+            <li><a href="{{ route('home') }}" class="btn btn-ghost text-xl">Home</a></li>
 
             <li><a class="btn btn-ghost text-xl">Meditatii</a></li>
           </ul>
+        @endauth
     </div>
     <div class="navbar-end">
 
@@ -36,6 +40,14 @@
                     {{-- <li>
                     <a href="{{ route('profile') }}">Profile</a>
                 </li> --}}
+                @admin
+                    <li>
+                        <a href="{{ route('admin-dashboard') }}">Admin Dashboard</a>
+                    </li>
+                @endadmin
+                    <li>
+                        <a href="#">Profile</a>
+                    </li>
                     <li>
                         <form method="POST" action="/logout">
                             @csrf

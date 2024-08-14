@@ -10,8 +10,9 @@ use App\Models\Answers;
 
 class AdminDashboard extends Component
 {
-
-    public $answer;
+    public $answer1;
+    public $answer2;
+    public $answer3;
 
     private function checkAdmin($user){
         $userModel = new User();
@@ -19,19 +20,18 @@ class AdminDashboard extends Component
             return true;
         }
         return false;
-
     }
 
     public function addAnswer($questionNumber){
-
+        $answerProperty = 'answer' . $questionNumber;
 
         $this->validate([
-            'answer' => 'required',
+            $answerProperty => 'required',
         ]);
 
         $answerModel = new Answers();
-        $answerModel->addAnswer($this->answer, $questionNumber);
-        $this->answer = '';
+        $answerModel->addAnswer($this->$answerProperty, $questionNumber);
+        $this->$answerProperty = '';
     }
 
     public function render(){
@@ -47,11 +47,11 @@ class AdminDashboard extends Component
                 'question_1_answers' => $question_1_answers,
                 'question_2_answers' => $question_2_answers,
                 'question_3_answers' => $question_3_answers,
-                'answer' => $this->answer
+                'answer1' => $this->answer1,
+                'answer2' => $this->answer2,
+                'answer3' => $this->answer3,
             ]);
         }
         return redirect()->to('/home');
     }
 }
-
-

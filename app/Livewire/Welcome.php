@@ -4,16 +4,18 @@ namespace App\Livewire;
 
 use Illuminate\Support\Collection;
 use Livewire\Component;
-use Mary\Traits\Toast;
+use Illuminate\Support\Facades\Auth;
 
 class Welcome extends Component
 {
-    use Toast;
-
+    public function mount(){
+        // if logged in, redirect to home
+        if(Auth::check()){
+            return redirect()->to('/home');
+        }
+    }
     public function render()
     {
-        return view('livewire.welcome', [
-            
-        ]);
+        return view('livewire.welcome');
     }
 }

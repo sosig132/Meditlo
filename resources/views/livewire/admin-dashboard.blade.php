@@ -9,7 +9,7 @@
     @endforeach
 
     <x-form wire:submit.prevent="addAnswer(1)">
-        <x-input label="Answer" wire:model="answer" />
+        <x-input label="Answer" wire:model="answer1" />
         <x-slot name="actions">
             <x-button label="Add Answer" class="btn-primary" type="submit" />
         </x-slot>
@@ -24,7 +24,7 @@
     @endforeach
 
     <x-form wire:submit.prevent="addAnswer(2)">
-        <x-input label="Answer" wire:model="answer" />
+        <x-input label="Answer" wire:model="answer2" />
         <x-slot name="actions">
             <x-button label="Add Answer" class="btn-primary" type="submit" />
         </x-slot>
@@ -39,11 +39,9 @@
     @endforeach
 
     <x-form wire:submit.prevent="addAnswer(3)">
-        <x-input label="Answer" wire:model="answer" />
+        <x-input label="Answer" wire:model="answer3" />
         <x-slot name="actions">
             <x-button label="Add Answer" class="btn-primary" type="submit" />
         </x-slot>
     </x-form>
-
-
 </div>

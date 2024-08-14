@@ -29,5 +29,19 @@ class Answers
 
         ]);
     }
+
+    public function addUserAnswers($answers, $userId){
+
+        foreach ($answers as $answer){
+            DB::table('answers')->insert([
+                'user_id' => $userId,
+                'answer_id' => $answer,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+
 }
 
