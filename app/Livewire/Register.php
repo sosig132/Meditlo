@@ -22,8 +22,6 @@ class Register extends Component
             'password' => 'required',
         ]);
 
-
-
         User::create($validated);
 
         session()->flash('message', 'User created successfully.');

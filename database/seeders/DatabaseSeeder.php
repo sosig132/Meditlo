@@ -12,6 +12,9 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    private $materii = ["Matematica", "Romana", "Engleza", "Franceza", "Germana", "Istorie", "Geografie", "Biologie", "Fizica", "Chimie", "Informatica", "Economie", "Logica", "Psihologie", "Filosofie", "Muzica", "Desen"];
+    private $roles = ["Tutore", "Student"];
+    private $type_of_teaching = ["Online", "Fizic"];
     public function run(): void
     {
         // \App\Models\User::factory(10)->create();
@@ -28,19 +31,35 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin'),
 
         ]);
-        $numberOfRecords = 20;
-
-        // Define possible question numbers
-        $questionNumbers = [1, 2, 3];
 
         // Seed data
-        for ($i = 0; $i < $numberOfRecords; $i++) {
+        foreach ($this->materii as $materie) {
             DB::table('possible_answers')->insert([
-                'answer' => 'Answer ' . ($i + 1), // Generating a unique answer text
-                'question_number' => $questionNumbers[array_rand($questionNumbers)], // Randomly select a question number
+                'answer' => $materie,
+                'question_number' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
+
+        foreach ($this->roles as $role) {
+            DB::table('possible_answers')->insert([
+                'answer' => $role,
+                'question_number' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach ($this->type_of_teaching as $type) {
+            DB::table('possible_answers')->insert([
+                'answer' => $type,
+                'question_number' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
     }
 }

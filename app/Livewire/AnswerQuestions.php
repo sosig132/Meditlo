@@ -17,6 +17,7 @@ class AnswerQuestions extends Component
     public $currentStep = 0;
     public $allAnswers = [];
     public $hasSelectedAnswers = [];
+    public $card_title = ["Doresti sa fii student sau tutore?", "Ce materii te intereseseaza?", "Ce stil de invatare ti se potriveste mai bine?"];
 
     private function checkQuestions($user){
         $userModel = new User();
@@ -92,7 +93,7 @@ class AnswerQuestions extends Component
 
         if (in_array(0, $check)){
             // show error message
-            $this->alert('error', 'Please answer all questions!', [
+            $this->alert('error', 'Please answer all the questions!', [
                 'position' => 'top',
                 'timer' => 3000,
                 'toast' => true,
@@ -102,6 +103,20 @@ class AnswerQuestions extends Component
 
         $user = Auth::user();
         $answersModel = new Answers();
+        $userModel = new User();
+        $actualAnswers = [];
+        foreach ($this->checkedAnswers as $answer){
+            $actualAnswers[] = $answersModel->getAnswerByAnswerId($answer)->answer;
+        }
+
+        if(in_array("Student", $actualAnswers)){
+            $userModel->makeStudent($user->id);
+        }
+
+        if(in_array("Tutor", $actualAnswers)){
+            $userModel->makeTutor($user->id);
+        }
+        
         $answersModel->addUserAnswers($this->checkedAnswers, $user->id);
         $this->alert('success', 'Answers submitted successfully!', [
             'position' => 'top',

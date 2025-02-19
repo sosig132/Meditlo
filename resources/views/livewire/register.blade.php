@@ -16,7 +16,9 @@
             <p class="text-red-500 text-xs italic">{{ $message }}</p>
         @enderror --}}
         <x-slot:actions>
+            <button class="underline" type="button" onclick="forgot_password_modal.showModal()">Forgot your password?</button>
             <x-button label="Register" class="btn-primary" type="submit" spinner="login" />
         </x-slot:actions>
     </x-form>
+    <livewire:forgot-password />
 </div>

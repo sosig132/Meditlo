@@ -5,8 +5,11 @@ use App\Livewire\Home;
 use App\Livewire\Logout;
 use App\Livewire\AdminDashboard;
 use App\Livewire\AnswerQuestions;
-
+use App\Livewire\Profile;
+use App\Livewire\ForgotPassword;
+use App\Livewire\ResetPassword;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +22,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', Welcome::class);
+Route::get('/', Welcome::class)->name('unauthenticated');
 Route::get('/home', Home::class)->name('home')->middleware('check.questions');
-Route::post('/logout', [Logout::class, 'logout']);
+Route::post('/logout', [Logout::class, 'logout'])->name('logout');
 Route::get('/admin-dashboard', AdminDashboard::class)->name('admin-dashboard');
 Route::get('/answer-questions', AnswerQuestions::class)->name('answer-questions');
+Route::get('/profile/{id}', Profile::class)->name('profile')->middleware('check.questions');
+Route::get('/reset-password/{token}', ResetPassword::class)->name('reset-password');

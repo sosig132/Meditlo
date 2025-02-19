@@ -42,6 +42,18 @@ class Answers
         }
     }
 
+    public function getUserAnswersForQuestion($userId, $questionNumber){
+        return DB::table('answers')
+            ->join('possible_answers', 'answers.answer_id', '=', 'possible_answers.id')
+            ->where('user_id', $userId)
+            ->where('question_number', $questionNumber)
+            ->get();
+    }
+
+    public function getAnswerByAnswerId($answerId){
+        return DB::table('possible_answers')->where('id', $answerId)->first();
+    }
+
 
 }
 

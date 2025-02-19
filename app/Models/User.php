@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -63,5 +64,67 @@ class User extends Authenticatable
 
     public function isAdmin(){
         return $this->role === 'admin';
+    }
+
+    public function getUserWithProfile($userId){
+        $userWithProfile = DB::table('users')
+            ->leftJoin('user_profiles', 'users.id', '=', 'user_profiles.user_id')
+            ->where('users.id', $userId)
+            ->select(
+                'users.id as id_user',
+                'users.*',
+                'user_profiles.*'
+            )
+            ->first();
+        return $userWithProfile;
+    }
+
+    public function updateProfile($array){
+        $data = array_filter($array, function($value) {
+            return !is_null($value);
+        });
+        $user_id = Auth::id();
+        return DB::table('user_profiles')->updateOrInsert(
+            ['user_id' => $user_id],
+            $data
+        );
+    }
+
+    public function makeStudent($userId){
+        DB::table('users')->where('id', $userId)->update(['is_student' => true]);
+    }
+
+    public function makeTutor($userId){
+        DB::table('users')->where('id', $userId)->update(['is_tutor' => true]);
+    }
+
+    public function getUserByEmail($email){
+        $user = DB::table('users')->where('email', $email)->first();
+        return $user;
+    }
+
+    public function updatePasswordResetToken($email, $token){
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],  // Match the record by email
+            ['token' => $token, 'created_at' => now()]  // The fields to update or insert
+        );
+    }
+
+    public function getPasswordResetToken($email){
+        $token = DB::table('password_reset_tokens')->where('email', $email)->first();
+        return $token;
+    }
+
+    public function deletePasswordResetToken($email){
+        DB::table('password_reset_tokens')->where('email', $email)->delete();
+    }
+
+    public function getUserByToken($token){
+        $user = DB::table('password_reset_tokens')->where('token', $token)->first();
+        return $user;
+    }
+
+    public function updatePassword($user, $password){
+        DB::table('users')->where('id', $user->id)->update(['password' => bcrypt($password)]);
     }
 }

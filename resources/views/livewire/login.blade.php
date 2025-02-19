@@ -12,7 +12,6 @@
                 <p class="text-red-500 text-xs italic">{{ $message }}</p>
             @enderror --}}
             <x-slot:actions>
-
                 <x-button onclick="login_modal.close()" label="Cancel" />
                 <x-button label="Login" class="btn-primary" type="submit" spinner="login" />
             </x-slot:actions>

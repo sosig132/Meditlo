@@ -10,6 +10,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <style>
+        .align-middle {
+            align-content: center;
+        }
+        .full-height-no-navbar {
+            height: calc(100vh - 4rem);
+        }
+        html, body {
+            height: 100%;
+        }
         .slide-enter-active, .slide-leave-active {
             transition: transform 0.5s ease;
         }
