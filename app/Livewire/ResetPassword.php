@@ -21,6 +21,18 @@ class ResetPassword extends Component
             return redirect()->to('/home');
         }
         $this->token = $token;
+
+        if (!$this->checkToken()) {
+            return redirect()->to('/');
+        }
+
+    }
+
+    private function checkToken() {
+        $user_model = new User();
+        $token = $user_model->getUserByToken($this->token);
+
+        return $token;
     }
 
     public function resetPassword()
@@ -58,12 +70,6 @@ class ResetPassword extends Component
 
     public function render()
     {
-        $user_model = new User();
-        $token = $user_model->getUserByToken($this->token);
-        if (!$token) {
-            return redirect()->to('unauthenticated');
-        }
-
         return view('livewire.reset-password');
     }
 }

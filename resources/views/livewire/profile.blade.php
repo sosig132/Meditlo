@@ -5,7 +5,7 @@
         <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
             <div class="relative group">
                 <!-- Profile Image -->
-                <img src="{{ $photo ? asset('storage/' . $photo) : 'https://via.placeholder.com/150' }}"
+                <img src="{{ $photo ? asset('storage/' . $photo) : 'https://adaptcommunitynetwork.org/person-placeholder/' }}"
                     id="profile-image"
                     alt="Profile Photo"
                     class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 cursor-pointer transition duration-300 ease-in-out transform group-hover:scale-105"
