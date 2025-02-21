@@ -1,8 +1,8 @@
 <!-- resources/views/livewire/profile.blade.php -->
-<div class="flex flex-col md:flex-row items-start justify-center space-y-4 md:space-y-0 md:space-x-4">
+<div class="flex flex-col profile:flex-row items-start justify-center md:space-y-4 profile:space-y-0 profile:space-x-4 sm:justify-center">
     <!-- Profile Box -->
-    <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 max-w-4xl w-full mx-4 sm:mx-8 flex-1">
-        <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
+    <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 max-w-4xl w-full profile:mx-8 profile:mt-4 flex-1">
+        <div class="flex flex-col profile:flex-row items-center space-y-4 profile:space-y-0 profile:space-x-8">
             <div class="relative group">
                 <!-- Profile Image -->
                 <img src="{{ $photo ? asset('storage/' . $photo) : 'https://adaptcommunitynetwork.org/person-placeholder/' }}"
@@ -20,7 +20,7 @@
                 <!-- File Input (hidden) -->
                 <input type="file" id="photo-upload" wire:model="photo" class="hidden" accept="image/*">
             </div>
-            <div class="text-center md:text-left">
+            <div class="text-center profile:text-left">
                 <h2 class="text-3xl font-semibold text-gray-100">{{ $user->name }}</h2>
                 <p class="text-gray-300 mt-2">{{ ucfirst($user->role) }}</p>
                 <div class="mt-6">
@@ -63,16 +63,40 @@
             @endif
         </div>
     </div>
-    <!-- Materii Box -->
-    <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 max-w-xs w-full mx-4 sm:mx-8 flex-1 md:mt-0 mt-4">
-        <h3 class="text-2xl font-semibold text-gray-100">{{$user->role == 'Student' ? 'La ce' : 'Ce'}} materii vreau sa {{ $user->role == 'student' ? 'invat' : 'predau' }}</h3>
-        <ul class="list-disc list-inside mt-4 text-gray-300">
-            @foreach($materii as $materie)
-                <li>
-                    {{ $materie->answer }}
-                </li>
-            @endforeach
-        </ul>
+    <div class="flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
+        <!-- Materii Box -->
+        <div class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">{{$user->role == 'Student' ? 'La ce' : 'Ce'}} materii vreau sa {{ $user->role == 'student' || 'admin' ? 'invat' : 'predau' }}</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach($materii as $materie)
+                    <li>
+                        {{ $materie->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <!-- Nivel Box -->
+        <div class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach($nivel as $nv)
+                    <li>
+                        {{ $nv->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <!-- Stil de invatare Box -->
+        <div class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">Stilul de invatare preferat</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach($stil_invatare as $si)
+                    <li>
+                        {{ $si->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
     </div>
 
 </div>

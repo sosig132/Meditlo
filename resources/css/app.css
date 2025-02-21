@@ -16,3 +16,11 @@
 .mary-table-pagination button {
     @apply bg-base-100
 }
+
+/* media */
+
+@media (min-width: 864px) {
+    .profile {
+        flex-direction: row;
+    }
+ }

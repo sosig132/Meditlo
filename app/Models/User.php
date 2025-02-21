@@ -91,11 +91,11 @@ class User extends Authenticatable
     }
 
     public function makeStudent($userId){
-        DB::table('users')->where('id', $userId)->update(['is_student' => true]);
+        DB::table('users')->where('id', $userId)->update(['role' => 'student']);
     }
 
     public function makeTutor($userId){
-        DB::table('users')->where('id', $userId)->update(['is_tutor' => true]);
+        DB::table('users')->where('id', $userId)->update(['role' => 'tutor']);
     }
 
     public function getUserByEmail($email){

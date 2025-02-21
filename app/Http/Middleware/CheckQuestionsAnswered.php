@@ -24,7 +24,7 @@ class CheckQuestionsAnswered
     {
         $userModel = new User();
         $answers = $userModel->getDifferentQuestionsAnswersCount($user);
-        if ($answers == 3) {
+        if ($answers == 4) {
             return true;
         }
         return false;

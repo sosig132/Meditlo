@@ -12,7 +12,7 @@
                             @foreach ($answers as $answer)
                                 <button
                                     class="btn btn-ghost btn-sm
-                                    {{ in_array($answer->id, $checkedAnswers) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800' }}"
+                                    {{ in_array($answer->id, $checkedAnswers) ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-200 text-gray-800' }}"
                                     wire:click="toggleCheck({{ $answer->id }})"
                                     type="button">
                                     {{ $answer->answer }}

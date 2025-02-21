@@ -27,12 +27,13 @@ class Profile extends Component
     public $photo;
     public $user_model;
     public $materii;
+    public $nivel;
+    public $stil_invatare;
     public function mount($id)
     {
         $answers_model = new Answers();
         $this->user_model = new User();
         $this->userId = $id;
-        $this->materii = $answers_model->getUserAnswersForQuestion($this->userId, 2);
         $this->user = $this->user_model->getUserWithProfile($this->userId);
         if (!$this->user) {
             abort(404);
@@ -41,6 +42,9 @@ class Profile extends Component
         $this->newEmail = $this->user->email;
         $this->newAboutMe = $this->user->about_me;
         $this->photo = $this->user->user_photo;
+        $this->materii = $answers_model->getUserAnswersForQuestion($this->userId, 2);
+        $this->stil_invatare = $answers_model->getUserAnswersForQuestion($this->userId, 3);
+        $this->nivel = $answers_model->getUserAnswersForQuestion($this->userId, 4);
     }
 
     public function toggleEdit($field)

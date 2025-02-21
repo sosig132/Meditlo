@@ -14,12 +14,8 @@ class Answers
     }
 
     public function addAnswer($answer, $questionNumber){
-        // create a log file in the storage/logs directory
-        // log the answer and question number
 
         Log::info('Answer added: ', ['answer' => $answer, 'question_number' => $questionNumber]);
-
-
 
         DB::table('possible_answers')->insert([
             'answer' => $answer,
@@ -54,6 +50,12 @@ class Answers
         return DB::table('possible_answers')->where('id', $answerId)->first();
     }
 
+    public function getTutorAnswerId() {
+        return DB::table('possible_answers')->where('answer', 'Tutore')->first()->id;
+    }
 
+    public function getStudentAnswerId() {
+        return DB::table('possible_answers')->where('answer', 'Student')->first()->id;
+    }
 }
 

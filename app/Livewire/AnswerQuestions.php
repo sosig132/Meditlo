@@ -17,12 +17,12 @@ class AnswerQuestions extends Component
     public $currentStep = 0;
     public $allAnswers = [];
     public $hasSelectedAnswers = [];
-    public $card_title = ["Doresti sa fii student sau tutore?", "Ce materii te intereseseaza?", "Ce stil de invatare ti se potriveste mai bine?"];
+    public $card_title = ["Doresti sa fii student sau tutore?", "Ce materii te intereseseaza?", "Ce stil de invatare ti se potriveste mai bine?", "Ce nivel de invatamant te intereseseaza?"];
 
     private function checkQuestions($user){
         $userModel = new User();
         $answers = $userModel->getDifferentQuestionsAnswersCount($user);
-        if ($answers == 3) {
+        if ($answers == count($this->card_title)) {
             return true;
         }
         return false;
@@ -33,25 +33,35 @@ class AnswerQuestions extends Component
         $answers_1 = $possibleAnswers->where('question_number', 1);
         $answers_2 = $possibleAnswers->where('question_number', 2);
         $answers_3 = $possibleAnswers->where('question_number', 3);
+        $answers_4 = $possibleAnswers->where('question_number', 4);
         return [
             0 => $answers_1,
             1 => $answers_2,
             2 => $answers_3,
+            3 => $answers_4,
         ];
     }
 
     public function toggleCheck($answerId){
+        $answer_model = new Answers();
+        $tutorAnswerId = $answer_model->getTutorAnswerId();
+        $studentAnswerId = $answer_model->getStudentAnswerId();
+
+        $pair = [$tutorAnswerId => $studentAnswerId, $studentAnswerId => $tutorAnswerId];
+
+        // if the answer is tutor or student, remove the other one
+        if (array_key_exists($answerId, $pair)){
+            $this->checkedAnswers = array_diff($this->checkedAnswers, [$pair[$answerId]]);
+        }
         if (in_array($answerId, $this->checkedAnswers)){
             $this->checkedAnswers = array_diff($this->checkedAnswers, [$answerId]);
-        }
-        else{
+        } else {
             $this->checkedAnswers[] = $answerId;
         }
-
     }
 
     public function nextStep(){
-        if($this->currentStep < 2){
+        if($this->currentStep < count($this->card_title) - 1){
             sleep(0.5);
             $this->currentStep++;
         }
@@ -84,10 +94,8 @@ class AnswerQuestions extends Component
     }
 
     public function submitAnswers(){
-        $check = [0,0,0];
+        $check = array_fill(0, count($this->card_title), 0);
         foreach ($this->checkedAnswers as $answer){
-
-
             $check[$this->getAnswerQuestionNumber($answer) - 1] = 1;
         }
 
@@ -116,7 +124,7 @@ class AnswerQuestions extends Component
         if(in_array("Tutor", $actualAnswers)){
             $userModel->makeTutor($user->id);
         }
-        
+
         $answersModel->addUserAnswers($this->checkedAnswers, $user->id);
         $this->alert('success', 'Answers submitted successfully!', [
             'position' => 'top',
@@ -129,16 +137,20 @@ class AnswerQuestions extends Component
     public function mount()
     {
         $user = Auth::user();
+        $user_model = new User();
         $answers = $this->checkQuestions($user);
 
         if ($answers) {
             return redirect()->route('home');
         }
+
+        $this->allAnswers = $this->getAllAnswers();
+        $this->checkedAnswers = $user_model->getUserAnswers($user) ?? [];
     }
 
     public function render(){
         $this->allAnswers = $this->getAllAnswers();
-        $this->hasSelectedAnswers = array_fill(0, 3, 0);
+        $this->hasSelectedAnswers = array_fill(0, 4, 0);
         return view('livewire.answer-questions',
             [
                 'currentAnswers' => $this->allAnswers[$this->currentStep],
