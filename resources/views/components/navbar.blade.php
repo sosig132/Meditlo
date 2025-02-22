@@ -32,7 +32,7 @@
 
                 <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 rounded-full">
-                        <img src="{{ Storage::url(authUserPhoto()) }}" alt="Profile Photo">
+                        <img src="{{ authUserPhoto() ? Storage::url(authUserPhoto()) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}" alt="Profile Photo">
                     </div>
                 </div>
                 <ul tabindex="0" class="p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52 z-50">

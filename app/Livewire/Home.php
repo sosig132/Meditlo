@@ -9,15 +9,14 @@ use App\Models\User;
 
 class Home extends Component
 {
-
-    public function render()
-    {
+    public function mount(){
         if(!Auth::check()){
             return redirect()->to('/');
         }
+    }
 
+    public function render()
+    {
         return view('livewire.home');
-
-        #return redirect()->to('/answer-questions');
     }
 }

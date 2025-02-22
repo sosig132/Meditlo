@@ -2,9 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Answers;
+use App\Models\Answer;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Livewire\WithFileUploads;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -25,26 +24,43 @@ class Profile extends Component
     public $newAboutMe;
     public $userId;
     public $photo;
-    public $user_model;
-    public $materii;
-    public $nivel;
-    public $stil_invatare;
+    private $user_model;
+    private $materii = [];
+    private $nivel = [];
+    private $stil_invatare = [];
+    private $profile_model;
     public function mount($id)
     {
-        $answers_model = new Answers();
+        $answers_model = new Answer();
         $this->user_model = new User();
+        $this->profile_model = new \App\Models\Profile();
         $this->userId = $id;
-        $this->user = $this->user_model->getUserWithProfile($this->userId);
+        $this->user = User::with('profile')->find($this->userId);
         if (!$this->user) {
             abort(404);
         }
-        $this->newPhone = $this->user->phone;
         $this->newEmail = $this->user->email;
-        $this->newAboutMe = $this->user->about_me;
-        $this->photo = $this->user->user_photo;
+        $this->newPhone = $this->user->profile->phone;
+        $this->newAboutMe = $this->user->profile->about_me;
+        $this->photo = $this->user->profile->user_photo;
         $this->materii = $answers_model->getUserAnswersForQuestion($this->userId, 2);
         $this->stil_invatare = $answers_model->getUserAnswersForQuestion($this->userId, 3);
         $this->nivel = $answers_model->getUserAnswersForQuestion($this->userId, 4);
+    }
+
+    public function getMaterii()
+    {
+        return $this->materii;
+    }
+
+    public function getStilInvatare()
+    {
+        return $this->stil_invatare;
+    }
+
+    public function getNivel()
+    {
+        return $this->nivel;
     }
 
     public function toggleEdit($field)
@@ -63,8 +79,7 @@ class Profile extends Component
         $this->validate([
             'newPhone' => 'nullable|string|max:15',
         ]);
-
-        $check = $this->user_model->updateProfile(['phone' => $this->newPhone]);
+        $check = \App\Models\Profile::updateProfile(['phone' => $this->newPhone], $this->userId);
 
         $this->showAlert($check, "Numarul de telefon");
 
@@ -99,7 +114,7 @@ class Profile extends Component
         $this->photo = $path;
 
         // Update the user profile with the new photo path
-        $check = $this->user_model->updateProfile(['user_photo' => $path]);
+        $check = \App\Models\Profile::updateProfile(['user_photo' => $path], $this->userId);
 
         // Provide feedback
         $this->showAlert($check, "Poza de profil");
@@ -137,7 +152,7 @@ class Profile extends Component
             'newAboutMe' => 'nullable|string|max:500',
         ]);
 
-        $check = $this->user_model->updateProfile(['about_me'=>$this->newAboutMe]);
+        $check = \App\Models\Profile::updateProfile(['about_me'=>$this->newAboutMe], $this->userId);
 
         $this->showAlert($check, "Descrierea ta");
 
@@ -146,8 +161,10 @@ class Profile extends Component
 
     public function render()
     {
-        $user_model = new User();
-        $user = $user_model->getUserWithProfile(Auth::user());
-        return view('livewire.profile', ['user' => $user]);
+        return view('livewire.profile', [
+            'materii' => $this->getMaterii(),
+            'stil_invatare' => $this->getStilInvatare(),
+            'nivel' => $this->getNivel(),
+        ]);
     }
 }

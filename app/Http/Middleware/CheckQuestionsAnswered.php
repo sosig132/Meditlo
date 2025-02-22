@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Models\User;
 
 class CheckQuestionsAnswered
@@ -16,17 +15,13 @@ class CheckQuestionsAnswered
         if ($currentUser && !$this->checkQuestions($currentUser)) {
             return redirect()->route('answer-questions');
         }
-
         return $next($request);
     }
 
     private function checkQuestions($user)
     {
-        $userModel = new User();
-        $answers = $userModel->getDifferentQuestionsAnswersCount($user);
-        if ($answers == 4) {
-            return true;
-        }
-        return false;
+        $user = User::find(Auth::user()->id);
+        $answers = $user->getDifferentQuestionsAnswersCount();
+        return $answers === 4;
     }
 }

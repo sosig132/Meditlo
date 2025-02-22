@@ -2,13 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\Answer;
+use App\Models\PossibleAnswer;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Answers;
-
 
 class AnswerQuestions extends Component
 {
@@ -17,40 +17,65 @@ class AnswerQuestions extends Component
     public $currentStep = 0;
     public $allAnswers = [];
     public $hasSelectedAnswers = [];
-    public $card_title = ["Doresti sa fii student sau tutore?", "Ce materii te intereseseaza?", "Ce stil de invatare ti se potriveste mai bine?", "Ce nivel de invatamant te intereseseaza?"];
+    public $card_title = [
+        "Doresti sa fii student sau tutore?",
+        "Ce materii te intereseseaza?",
+        "Ce stil de invatare ti se potriveste mai bine?",
+        "Ce nivel de invatamant te intereseseaza?"
+    ];
+
+    public function mount()
+    {
+        $user = $this->getAuthUser();
+
+        if ($this->hasAnsweredAllQuestions($user)) {
+            return redirect()->route('home');
+        }
+
+        $this->allAnswers = $this->getAllAnswers();
+        $this->checkedAnswers = $this->getUserCheckedAnswers($user);
+    }
+
+    private function hasAnsweredAllQuestions(User $user)
+    {
+        return $user->getDifferentQuestionsAnswersCount() === count($this->card_title);
+    }
+
+    private function getAuthUser()
+    {
+        return User::find(Auth::user()->id);
+    }
+
+    private function getAllAnswers(){
+        $possibleAnswers = PossibleAnswer::getPossibleAnswers();
+        return collect(range(1, count($this->card_title)))
+            ->mapWithKeys(fn($q) => [$q - 1 => $possibleAnswers->where('question_number', $q)]);
+    }
+
+    private function getUserCheckedAnswers(User $user)
+    {
+        return $user->answers()->pluck('answer_id')->toArray();
+    }
 
     private function checkQuestions($user){
-        $userModel = new User();
-        $answers = $userModel->getDifferentQuestionsAnswersCount($user);
+        $user = User::find(Auth::user()->id);
+        $answers = $user->getDifferentQuestionsAnswersCount();
         if ($answers == count($this->card_title)) {
             return true;
         }
         return false;
     }
 
-    private function getAllAnswers(){
-        $possibleAnswers = $this->getPossibleAnswersForAll();
-        $answers_1 = $possibleAnswers->where('question_number', 1);
-        $answers_2 = $possibleAnswers->where('question_number', 2);
-        $answers_3 = $possibleAnswers->where('question_number', 3);
-        $answers_4 = $possibleAnswers->where('question_number', 4);
-        return [
-            0 => $answers_1,
-            1 => $answers_2,
-            2 => $answers_3,
-            3 => $answers_4,
-        ];
-    }
 
     public function toggleCheck($answerId){
-        $answer_model = new Answers();
-        $tutorAnswerId = $answer_model->getTutorAnswerId();
-        $studentAnswerId = $answer_model->getStudentAnswerId();
+        $answer_model = new Answer();
+        $tutorAnswerId = PossibleAnswer::getTutorAnswerId();
+        $studentAnswerId = PossibleAnswer::getStudentAnswerId();
 
         $pair = [$tutorAnswerId => $studentAnswerId, $studentAnswerId => $tutorAnswerId];
 
         // if the answer is tutor or student, remove the other one
-        if (array_key_exists($answerId, $pair)){
+        if (isset($pair[$answerId])) {
             $this->checkedAnswers = array_diff($this->checkedAnswers, [$pair[$answerId]]);
         }
         if (in_array($answerId, $this->checkedAnswers)){
@@ -77,8 +102,8 @@ class AnswerQuestions extends Component
     }
 
     private function getPossibleAnswersForAll(){
-        $answersModel = new Answers();
-        return $answersModel->getPossibleAnswersForAll();
+        $answersModel = new Answer();
+        return $answersModel->getPossibleAnswers();
     }
 
     private function getAnswerQuestionNumber($answerId)
@@ -94,66 +119,59 @@ class AnswerQuestions extends Component
     }
 
     public function submitAnswers(){
-        $check = array_fill(0, count($this->card_title), 0);
-        foreach ($this->checkedAnswers as $answer){
-            $check[$this->getAnswerQuestionNumber($answer) - 1] = 1;
-        }
-
-        if (in_array(0, $check)){
-            // show error message
-            $this->alert('error', 'Please answer all the questions!', [
-                'position' => 'top',
-                'timer' => 3000,
-                'toast' => true,
-            ]);
+        if (!$this->validateAllQuestionsAnswered()) {
+            $this->alertError('Please answer all the questions!');
             return;
         }
 
-        $user = Auth::user();
-        $answersModel = new Answers();
-        $userModel = new User();
+        $user = $this->getAuthUser();
+        $answersModel = new Answer();
         $actualAnswers = [];
-        foreach ($this->checkedAnswers as $answer){
-            $actualAnswers[] = $answersModel->getAnswerByAnswerId($answer)->answer;
-        }
+        $actualAnswers = collect($this->checkedAnswers)
+            ->map(fn($id) => PossibleAnswer::getPossibleAnswerById($id)->answer);
 
-        if(in_array("Student", $actualAnswers)){
-            $userModel->makeStudent($user->id);
+        if ($actualAnswers->contains('Student')) {
+            $user->makeStudent();
         }
-
-        if(in_array("Tutor", $actualAnswers)){
-            $userModel->makeTutor($user->id);
+        if ($actualAnswers->contains('Tutore')) {
+            $user->makeTutor();
         }
 
         $answersModel->addUserAnswers($this->checkedAnswers, $user->id);
-        $this->alert('success', 'Answers submitted successfully!', [
+        $this->alertSuccess('Answers submitted successfully!');
+        return redirect()->route('home');
+    }
+
+    private function validateAllQuestionsAnswered()
+    {
+        $answered = collect($this->checkedAnswers)
+            ->map(fn($id) => $this->getAnswerQuestionNumber($id))
+            ->unique()
+            ->count();
+
+        return $answered === count($this->card_title);
+    }
+
+    private function alertError($message){
+        $this->alert('error', $message, [
             'position' => 'top',
             'timer' => 3000,
             'toast' => true,
         ]);
-        return redirect()->route('home');
     }
 
-    public function mount()
+    private function alertSuccess($message){
+        $this->alert('success', $message, [
+            'position' => 'top',
+            'timer' => 3000,
+            'toast' => true,
+        ]);
+    }
+
+    public function render()
     {
-        $user = Auth::user();
-        $user_model = new User();
-        $answers = $this->checkQuestions($user);
-
-        if ($answers) {
-            return redirect()->route('home');
-        }
-
-        $this->allAnswers = $this->getAllAnswers();
-        $this->checkedAnswers = $user_model->getUserAnswers($user) ?? [];
-    }
-
-    public function render(){
-        $this->allAnswers = $this->getAllAnswers();
-        $this->hasSelectedAnswers = array_fill(0, 4, 0);
-        return view('livewire.answer-questions',
-            [
-                'currentAnswers' => $this->allAnswers[$this->currentStep],
-            ]);
+        return view('livewire.answer-questions', [
+            'currentAnswers' => $this->allAnswers[$this->currentStep] ?? [],
+        ]);
     }
 }

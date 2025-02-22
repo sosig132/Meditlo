@@ -22,7 +22,7 @@ class Register extends Component
             'password' => 'required',
         ]);
 
-        User::create($validated);
+        User::createUser($validated);
 
         session()->flash('message', 'User created successfully.');
 

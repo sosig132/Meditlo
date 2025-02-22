@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Sleep;
 use Livewire\Component;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Services\PasswordResetService;
 
 class ResetPassword extends Component
 {
@@ -43,12 +44,13 @@ class ResetPassword extends Component
         ]);
 
         $user_model = new User();
+        $password_reset_service = new PasswordResetService();
 
-        $user = $user_model->getUserByEmail($user_model->getUserByToken($this->token)->email);
+        $user = $user_model->getUserByEmail(email: $password_reset_service->getUserByToken($this->token)->email);
 
         if ($user) {
-            $user_model->updatePassword($user, $this->password);
-            $user_model->deletePasswordResetToken($user->email);
+            $user_model->updatePassword($this->password);
+            $password_reset_service->deletePasswordResetToken($user->email);
             $this->showAlert('Parola a fost resetata cu succes.');
             $this->dispatch('redirectToHome');
             $this->password_has_been_reset = true;
