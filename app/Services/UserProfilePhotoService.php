@@ -15,11 +15,6 @@ class UserProfilePhotoService
     {
         $user = Auth::user();
 
-        if ($user) {
-            $profile = DB::table('user_profiles')->where('user_id', $user->id)->first();
-            return $profile ? $profile->user_photo : null;
-        }
-
-        return null;
+        return $user?->profile?->user_photo;
     }
 }

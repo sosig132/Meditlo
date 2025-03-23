@@ -32,7 +32,7 @@ class ForgotPassword extends Component
         // Check if email exists in the database
         $user_model = new User();
         $password_reset_service = new PasswordResetService();
-        $user = $user_model->getUserByEmail($this->email);
+        $user = $user_model->findByEmail($this->email);
         if ($user) {
             $token = Str::random(60);
             $password_reset_service->updatePasswordResetToken($user->email, $token);

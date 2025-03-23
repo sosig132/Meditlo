@@ -30,8 +30,8 @@ class ResetPassword extends Component
     }
 
     private function checkToken() {
-        $user_model = new User();
-        $token = $user_model->getUserByToken($this->token);
+        $password_reset_service = new PasswordResetService();
+        $token = $password_reset_service->getUserByToken($this->token);
 
         return $token;
     }
@@ -46,10 +46,10 @@ class ResetPassword extends Component
         $user_model = new User();
         $password_reset_service = new PasswordResetService();
 
-        $user = $user_model->getUserByEmail(email: $password_reset_service->getUserByToken($this->token)->email);
+        $user = $user_model->findByEmail(email: $password_reset_service->getUserByToken($this->token)->email);
 
         if ($user) {
-            $user_model->updatePassword($this->password);
+            $user->updatePassword($this->password);
             $password_reset_service->deletePasswordResetToken($user->email);
             $this->showAlert('Parola a fost resetata cu succes.');
             $this->dispatch('redirectToHome');

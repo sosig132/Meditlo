@@ -33,7 +33,7 @@ class PossibleAnswer extends Model
             'question_number' => $questionNumber,
         ]);
     }
-    
+
     public static function getPossibleAnswerById($answerId) {
         return PossibleAnswer::find($answerId);
     }
@@ -44,5 +44,9 @@ class PossibleAnswer extends Model
 
     public static function getStudentAnswerId() {
         return PossibleAnswer::where('answer', 'Student')->value('id');
+    }
+
+    public static function getPossibleAnswersForQuestion($questionNumber) {
+        return self::where('question_number', $questionNumber)->get();
     }
 }
