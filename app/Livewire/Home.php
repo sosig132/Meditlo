@@ -36,13 +36,13 @@ class Home extends Component
     }
 
     public function getLevels(){
-        $levels = PossibleAnswer::getPossibleAnswersForQuestion(3);
+        $levels = PossibleAnswer::getPossibleAnswersForQuestion(4);
         $levels = $this->getAnswersFromCollection($levels);
         return $levels;
     }
 
     public function getStyles(){
-        $styles = PossibleAnswer::getPossibleAnswersForQuestion(4);
+        $styles = PossibleAnswer::getPossibleAnswersForQuestion(3);
         $styles = $this->getAnswersFromCollection($styles);
         return $styles;
     }

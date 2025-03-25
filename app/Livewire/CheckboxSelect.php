@@ -8,10 +8,12 @@ class CheckboxSelect extends Component
 {
     public $selected = [];
     public $options = [];
+    public $type = null;
 
-    public function mount($options = [])
+    public function mount($options = [], $type = "")
     {
         $this->options = $options;
+        $this->type = $type;
     }
 
     public function updateSelected($value)
@@ -21,7 +23,6 @@ class CheckboxSelect extends Component
     }
 
     protected function getPropertyName() {
-        dd("D");
         return str_replace('selectedOptions', '', $this->getName());
     }
     public function render()

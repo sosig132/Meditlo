@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 /* Table pagination: active page highlight */
 .mary-table-pagination span[aria-current="page"] > span {
     @apply bg-primary text-base-100
@@ -24,3 +23,22 @@
         flex-direction: row;
     }
  }
+
+.ts-control {
+    background: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity))) !important;
+    border: none !important;
+}
+
+.ts-control input {
+    background-color: (--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+    color: white !important;
+}
+
+.ts-wrapper {
+    background-color: (--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+.ts-dropdown {
+    background-color: #1d232a !important;
+    color: white !important;
+}
