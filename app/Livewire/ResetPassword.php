@@ -16,6 +16,8 @@ class ResetPassword extends Component
     public $password_confirmation;
     public $token;
     public $password_has_been_reset = false;
+    protected $password_reset_service;
+    protected $user_model;
     public function mount($token)
     {
         if(Auth::check()){
@@ -26,12 +28,12 @@ class ResetPassword extends Component
         if (!$this->checkToken()) {
             return redirect()->to('/');
         }
-
+        $this->password_reset_service = new PasswordResetService();
+        $this->user_model = new User();
     }
 
     private function checkToken() {
-        $password_reset_service = new PasswordResetService();
-        $token = $password_reset_service->getUserByToken($this->token);
+        $token = $this->password_reset_service->getUserByToken($this->token);
 
         return $token;
     }
@@ -43,14 +45,14 @@ class ResetPassword extends Component
             'password_confirmation' => 'required|min:8',
         ]);
 
-        $user_model = new User();
-        $password_reset_service = new PasswordResetService();
 
-        $user = $user_model->findByEmail(email: $password_reset_service->getUserByToken($this->token)->email);
+
+
+        $user = $this->user_model->findByEmail(email: $this->password_reset_service->getUserByToken($this->token)->email);
 
         if ($user) {
             $user->updatePassword($this->password);
-            $password_reset_service->deletePasswordResetToken($user->email);
+            $this->password_reset_service->deletePasswordResetToken($user->email);
             $this->showAlert('Parola a fost resetata cu succes.');
             $this->dispatch('redirectToHome');
             $this->password_has_been_reset = true;

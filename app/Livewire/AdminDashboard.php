@@ -48,7 +48,6 @@ class AdminDashboard extends Component
 
     public function render()
     {
-        // dd($this->getPossibleAnswers());
         return view('livewire.admin-dashboard', [
             'questions' => range(1, 4),
             'possibleAnswers' => $this->getPossibleAnswers(),

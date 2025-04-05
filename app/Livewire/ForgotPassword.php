@@ -18,10 +18,15 @@ class ForgotPassword extends Component
 
     public $email;
 
+    protected $password_reset_service;
+    protected $user_model;
+
     public function mount() {
         if(Auth::check()){
             return redirect()->to('/home');
         }
+        $this->password_reset_service = new PasswordResetService();
+        $this->user_model = new User();
     }
     public function sendPasswordRecoveryEmail()
     {
@@ -29,13 +34,10 @@ class ForgotPassword extends Component
             'email' => 'required|email',
         ]);
 
-        // Check if email exists in the database
-        $user_model = new User();
-        $password_reset_service = new PasswordResetService();
-        $user = $user_model->findByEmail($this->email);
+        $user = $this->user_model->findByEmail($this->email);
         if ($user) {
             $token = Str::random(60);
-            $password_reset_service->updatePasswordResetToken($user->email, $token);
+            $this->password_reset_service->updatePasswordResetToken($user->email, $token);
 
             Mail::to($this->email)->send(new PasswordRecoveryMail($user, $token));
         }
@@ -43,7 +45,6 @@ class ForgotPassword extends Component
 
         $this->dispatch('closeForgotPasswordModal');
 
-        // $this->showAlert('Daca adresa de email este corecta, iti vom trimite un link pentru resetarea parolei.');
         $this->dispatch('showAlert', 'Daca adresa de email este corecta, iti vom trimite un link pentru resetarea parolei.');
     }
 

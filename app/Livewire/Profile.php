@@ -94,29 +94,23 @@ class Profile extends Component
 
     public function updatedPhoto()
     {
-        // Validate the uploaded file
         $this->validate([
             'photo' => 'image|max:1024',
         ]);
 
-        // Get the uploaded file's temporary path
         $imagePath = $this->photo->getRealPath();
 
-        // Resize the image to 128x128 pixels using Spatie Image
         $image = Image::load($imagePath)
             ->width(128)
             ->height(128)
             ->save($imagePath);
 
-        // Save the image to storage
         $path = 'photos/' . $this->photo->getClientOriginalName();
         Storage::disk('public')->put($path, file_get_contents($imagePath));
         $this->photo = $path;
 
-        // Update the user profile with the new photo path
         $check = \App\Models\Profile::updateProfile(['user_photo' => $path], $this->userId);
 
-        // Provide feedback
         $this->showAlert($check, "Poza de profil");
     }
 

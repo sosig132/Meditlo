@@ -68,4 +68,58 @@ class User extends Authenticatable
     public function updatePassword($password) {
         $this->update(['password' => bcrypt($password)]);
     }
+
+    public function getUsersByRole($role) {
+        return self::where('role', $role)->get();
+    }
+
+    public function getUserById($id) {
+        return self::find($id);
+    }
+
+    public function getUserByEmail($email) {
+        return self::where('email', $email)->first();
+    }
+
+    public function filterUsers($subjects = null, $levels = null, $styles = null, $name = null, $role = "tutor") {
+        $query = self::query();
+
+        $subjects = PossibleAnswer::whereIn('answer', $subjects)->pluck('id')->toArray();
+        $levels = PossibleAnswer::whereIn('answer', $levels)->pluck('id')->toArray();
+        $styles = PossibleAnswer::whereIn('answer', $styles)->pluck('id')->toArray();
+
+        if ($role) {
+            $query->where('role', $role);
+        }
+
+        if (empty($subjects) && empty($levels) && empty($styles) && empty($name)) {
+            return $query->get();
+        }
+
+        if ($subjects) {
+            $query->whereHas('answers', function ($q) use ($subjects) {
+                $q->whereIn('answer_id', $subjects);
+            });
+        }
+
+        if ($levels) {
+            $query->whereHas('answers', function ($q) use ($levels) {
+                $q->whereIn('answer_id', $levels);
+            });
+        }
+
+        if ($styles) {
+            $query->whereHas('answers', function ($q) use ($styles) {
+                $q->whereIn('answer_id', $styles);
+            });
+        }
+
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+
+
+        return $query->get();
+    }
 }

@@ -24,6 +24,8 @@ class AnswerQuestions extends Component
         "Ce nivel de invatamant te intereseseaza?"
     ];
 
+    protected $answersModel;
+
     public function mount()
     {
         $user = $this->getAuthUser();
@@ -34,6 +36,7 @@ class AnswerQuestions extends Component
 
         $this->allAnswers = $this->getAllAnswers();
         $this->checkedAnswers = $this->getUserCheckedAnswers($user);
+        $this->answersModel = new Answer();
     }
 
     private function hasAnsweredAllQuestions(User $user)
@@ -68,7 +71,6 @@ class AnswerQuestions extends Component
 
 
     public function toggleCheck($answerId){
-        $answer_model = new Answer();
         $tutorAnswerId = PossibleAnswer::getTutorAnswerId();
         $studentAnswerId = PossibleAnswer::getStudentAnswerId();
 
@@ -102,8 +104,8 @@ class AnswerQuestions extends Component
     }
 
     private function getPossibleAnswersForAll(){
-        $answersModel = new Answer();
-        return $answersModel->getPossibleAnswers();
+
+        return $this->answersModel->getPossibleAnswers();
     }
 
     private function getAnswerQuestionNumber($answerId)
@@ -125,7 +127,6 @@ class AnswerQuestions extends Component
         }
 
         $user = $this->getAuthUser();
-        $answersModel = new Answer();
         $actualAnswers = [];
         $actualAnswers = collect($this->checkedAnswers)
             ->map(fn($id) => PossibleAnswer::getPossibleAnswerById($id)->answer);
@@ -137,7 +138,7 @@ class AnswerQuestions extends Component
             $user->makeTutor();
         }
 
-        $answersModel->addUserAnswers($this->checkedAnswers, $user->id);
+        $this->answersModel->addUserAnswers($this->checkedAnswers, $user->id);
         $this->alertSuccess('Answers submitted successfully!');
         return redirect()->route('home');
     }

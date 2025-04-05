@@ -38,6 +38,10 @@
     background-color: (--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
 }
 
+.button-purple {
+    background-color: var(--p);
+}
+
 .ts-dropdown {
     background-color: #1d232a !important;
     color: white !important;

@@ -10,7 +10,7 @@ use App\Models\User;
 
 class Home extends Component
 {
-    public $personName;
+    public $personName = "";
     public $optionsSubjects = [];
     public $optionsLevels = [];
     public $optionsStyles = [];
@@ -18,15 +18,26 @@ class Home extends Component
     public $selectedSubjects = [];
     public $selectedLevels = [];
     public $selectedStyles = [];
+    public $users = [];
+    protected $userId;
+    protected $user_model;
+    public $modalUser = null;
 
-    protected $listeners = ['optionsUpdated' => 'updateSelectedOptions'];
     public function mount(){
         if(!Auth::check()){
             return redirect()->to('/');
         }
+        $this->userId = Auth::id();
+        $this->user_model = new User();
         $this->optionsSubjects = $this->getSubjects();
         $this->optionsLevels = $this->getLevels();
         $this->optionsStyles = $this->getStyles();
+        $this->users = $this->getRecommendations();
+    }
+
+    public function hydrate(){
+        $this->user_model = new User();
+        $this->userId = Auth::id();
     }
 
     public function getSubjects(){
@@ -47,16 +58,51 @@ class Home extends Component
         return $styles;
     }
 
-    private function getAnswersFromCollection($collection){
+    protected function getAnswersFromCollection($collection){
         return $collection->map(fn($answer) => $answer->answer)->toArray();
     }
 
-    public function updateSelectedOptions($collection, $selected){
-        $this->$collection = $selected;
+    protected function filteredUsers($role){
+        return $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->personName, $role);
     }
 
-    public function filter(){
-        dd($this->selectedSubjects);
+    protected function filterUsersByRole($users, $role) {
+        return $users->filter(function ($user) use ($role) {
+            return $user->role === $role;
+        });
+    }
+
+    public function getRecommendations() {
+        $role = $this->getUserRole();
+        $roleToGet = $role === 'student' || 'admin' ? 'tutor' : 'student';
+        $filteredUsers = $this->filteredUsers($roleToGet);
+        if (!$filteredUsers->isEmpty()) {
+            $this->users = $filteredUsers;
+            return $this->users;
+        }
+        $this->users = collect();
+
+        return $this->users;
+    }
+
+    protected function getUserRole() {
+        if (!$this->userId) {
+            return 'tutor';
+        }
+        return $this->user_model->getUserById($this->userId)->role;
+    }
+
+    public function showUserModal($id) {
+        $this->modalUser = $this->user_model->getUserById($id);
+        if (!$this->modalUser) {
+            return;
+        }
+
+        $this->dispatch('show-modal');
+    }
+
+    public function closeUserModal() {
+        $this->dispatch('close-modal');
     }
 
     public function render()
