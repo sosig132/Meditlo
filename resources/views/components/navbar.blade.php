@@ -25,7 +25,13 @@
         @endauth
     </div>
     <div class="navbar-end">
-
+        <div class="dropdown dropdown-end">
+            <livewire:notifications />
+        </div>
+        <div class="dropdown dropdown-end">
+            <livewire:messages />
+        </div>
+        {{-- Profile icon --}}
         <div class="dropdown dropdown-end">
             @auth
 
