@@ -26,8 +26,10 @@
         @click.away="show = false"
         class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64"
     >
-        <li><a>🔔 Andre Munteanu sent you a message!</a></li>
-        <li><a>📬 Notification 2</a></li>
-        <li><a>💡 Notification 3</a></li>
+        @foreach ($notifications as $notification)
+            {{var_dump($notification)}}
+            <li>
+            </li>
+        @endforeach
     </ul>
 </div>

@@ -15,7 +15,7 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Filtreaza dupa materie",
+            placeholder: "Materie",
             render: {
                 no_results: function() {
                     return '<p>Niciun rezultat gasit</p>';
@@ -34,10 +34,16 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Filtreaza dupa nivel",
+            placeholder: "Nivel",
             render: {
                 no_results: function() {
                     return '<p>Niciun rezultat gasit</p>';
+                }
+            },
+            plugins: {
+                remove_button: {
+                    title: 'Sterge filtrul',
+                    className: 'p-1'
                 }
             }
         });
@@ -47,10 +53,16 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Filtreaza dupa stil de invatare",
+            placeholder: "Stil de invatare",
             render: {
                 no_results: function() {
                     return '<p>Niciun rezultat gasit</p>';
+                }
+            },
+            plugins: {
+                remove_button: {
+                    title: 'Sterge filtrul',
+                    className: 'p-1'
                 }
             }
         });

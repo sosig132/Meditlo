@@ -1,14 +1,14 @@
 <div class="container mx-auto">
     <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 w-full flex-1">
         <x-input label="Name" wire:model="personName" />
-        <div class="filters flex flex-row space-x-4 mt-4">
-            <div class="w-1/5 bg-gray-800">
+        <div class="filters flex flex-col sm:flex-row sm:space-x-4 mt-4 mb-3">
+            <div class="w-1/2 sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
                 <x-checkbox-select :options="$optionsSubjects" type="subjects" wireModel="selectedSubjects" />
             </div>
-            <div class="w-1/5 bg-gray-800">
+            <div class="w-1/2 sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
                 <x-checkbox-select :options="$optionsLevels" type="levels" wireModel="selectedLevels" />
             </div>
-            <div class="w-1/5 bg-gray-800">
+            <div class="w-1/2 sm:w-1/5 bg-gray-800">
                 <x-checkbox-select :options="$optionsStyles" type="styles" wireModel="selectedStyles" />
             </div>
         </div>
@@ -33,7 +33,7 @@
                         </div>
                         <div class="flex flex-col">
                             <h3 class="text-xl font-semibold mb-1">{{ $user->name }}</h3>
-                            <div class="flex flex-row gap-3">
+                            <div class="flex-row gap-3 hidden md:flex">
                                 @foreach ($user->answers as $answer)
                                     @if ($answer->possibleAnswer->question_number == 2)
                                         <p class="bg-emerald-600  text-gray-100 rounded px-2">
@@ -49,8 +49,8 @@
             @endif
         </div>
     </div>
+    @if (!$users->isEmpty())
     <div>
-
         <dialog id="user_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
             <div class="modal-box flex flex-col">
                 <button wire:click="closeUserModal"
@@ -89,16 +89,17 @@
                     @endforeach
                 </div>
                 <div class="mt-4">
-                    <x-form wire:submit.prevent="sendRequest">
+                    <x-form wire:submit.prevent="sendMatchRequest">
                         <x-slot:actions>
                             <x-button onclick="user_modal.close()" label="Cancel" />
-                            <x-button label="Trimite cerere" class="btn-primary" type="submit" spinner="sendRequest" />
+                            <x-button label="Trimite cerere" class="btn-primary" type="submit" spinner="sendMatchRequest" />
                         </x-slot:actions>
                     </x-form>
                 </div>
             </div>
         </dialog>
     </div>
+    @endif
 </div>
 
 @script
