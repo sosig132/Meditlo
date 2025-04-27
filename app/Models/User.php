@@ -29,6 +29,10 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class, 'user_id');
     }
 
+    public function matchRequests() {
+        return $this->hasMany(MatchRequest::class, 'receiver_id');
+    }
+
     public static function createUser($data) {
         $data['password'] = bcrypt($data['password']);
         $user = self::create($data);

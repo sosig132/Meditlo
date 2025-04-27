@@ -27,8 +27,8 @@
         class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64"
     >
         @foreach ($notifications as $notification)
-            {{var_dump($notification)}}
             <li>
+                {{$notification['message']}}
             </li>
         @endforeach
     </ul>

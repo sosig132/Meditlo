@@ -1,14 +1,14 @@
 <div class="container mx-auto">
     <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 w-full flex-1">
         <x-input label="Name" wire:model="personName" />
-        <div class="filters flex flex-col sm:flex-row sm:space-x-4 mt-4 mb-3">
-            <div class="w-1/2 sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
+        <div class="filters flex flex-row flex-wrap gap-2.5 sm:flex-row sm:space-x-4 mt-4 mb-3">
+            <div class="w-1/3 min-w-[200px] sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
                 <x-checkbox-select :options="$optionsSubjects" type="subjects" wireModel="selectedSubjects" />
             </div>
-            <div class="w-1/2 sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
+            <div class="w-1/3 sm:w-1/5 min-w-[200px] bg-gray-800 sm:mb-0 mb-3">
                 <x-checkbox-select :options="$optionsLevels" type="levels" wireModel="selectedLevels" />
             </div>
-            <div class="w-1/2 sm:w-1/5 bg-gray-800">
+            <div class="w-1/3 sm:w-1/5 min-w-[200px] bg-gray-800">
                 <x-checkbox-select :options="$optionsStyles" type="styles" wireModel="selectedStyles" />
             </div>
         </div>
@@ -89,7 +89,7 @@
                     @endforeach
                 </div>
                 <div class="mt-4">
-                    <x-form wire:submit.prevent="sendMatchRequest">
+                    <x-form wire:submit.prevent="sendMatchRequest({{ $modalUser?->id }})">
                         <x-slot:actions>
                             <x-button onclick="user_modal.close()" label="Cancel" />
                             <x-button label="Trimite cerere" class="btn-primary" type="submit" spinner="sendMatchRequest" />
@@ -113,5 +113,6 @@
             const modal = document.getElementById('user_modal');
             modal.close();
         })
+        window.userId = @json(Auth::id());
     </script>
 @endscript

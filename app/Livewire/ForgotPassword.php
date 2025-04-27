@@ -28,6 +28,10 @@ class ForgotPassword extends Component
         $this->password_reset_service = new PasswordResetService();
         $this->user_model = new User();
     }
+    public function hydrate() {
+        $this->password_reset_service = new PasswordResetService();
+        $this->user_model = new User();
+    }
     public function sendPasswordRecoveryEmail()
     {
         $this->validate([

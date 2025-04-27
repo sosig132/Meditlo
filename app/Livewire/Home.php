@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\MatchRequest;
 use App\Models\PossibleAnswer;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -103,6 +104,10 @@ class Home extends Component
 
     public function closeUserModal() {
         $this->dispatch('close-modal');
+    }
+
+    public function sendMatchRequest($userId) {
+        $this->dispatch('matchRequestSent',  $userId);
     }
 
     public function render()
