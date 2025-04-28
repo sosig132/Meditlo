@@ -21,19 +21,33 @@ class User extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
     protected $casts = ['email_verified_at' => 'datetime'];
 
-    public function answers() {
+    public function answers()
+    {
         return $this->hasMany(Answer::class, 'user_id');
     }
 
-    public function profile() {
+    public function profile()
+    {
         return $this->hasOne(Profile::class, 'user_id');
     }
 
-    public function matchRequests() {
+    public function matchRequests()
+    {
         return $this->hasMany(MatchRequest::class, 'receiver_id');
     }
 
-    public static function createUser($data) {
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'tutors_students', 'tutor_id', 'student_id');
+    }
+
+    public function tutors()
+    {
+        return $this->belongsToMany(User::class, 'tutors_students', 'student_id', 'tutor_id');
+    }
+
+    public static function createUser($data)
+    {
         $data['password'] = bcrypt($data['password']);
         $user = self::create($data);
 
@@ -53,39 +67,48 @@ class User extends Authenticatable
             ->count();
     }
 
-    public function isAdmin(){
+    public function isAdmin()
+    {
         return $this->role === 'admin';
     }
 
-    public function makeStudent() {
+    public function makeStudent()
+    {
         $this->update(['role' => 'student']);
     }
 
-    public function makeTutor() {
+    public function makeTutor()
+    {
         $this->update(['role' => 'tutor']);
     }
 
-    public static function findByEmail($email) {
+    public static function findByEmail($email)
+    {
         return self::where('email', $email)->first();
     }
 
-    public function updatePassword($password) {
+    public function updatePassword($password)
+    {
         $this->update(['password' => bcrypt($password)]);
     }
 
-    public function getUsersByRole($role) {
+    public function getUsersByRole($role)
+    {
         return self::where('role', $role)->get();
     }
 
-    public function getUserById($id) {
+    public function getUserById($id)
+    {
         return self::find($id);
     }
 
-    public function getUserByEmail($email) {
+    public function getUserByEmail($email)
+    {
         return self::where('email', $email)->first();
     }
 
-    public function filterUsers($subjects = null, $levels = null, $styles = null, $name = null, $role = "tutor") {
+    public function filterUsers($subjects = null, $levels = null, $styles = null, $name = null, $role = "tutor")
+    {
         $query = self::query();
 
         $subjects = PossibleAnswer::whereIn('answer', $subjects)->pluck('id')->toArray();
@@ -125,5 +148,78 @@ class User extends Authenticatable
 
 
         return $query->get();
+    }
+
+    public function isTutor()
+    {
+        return $this->role === 'tutor';
+    }
+
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+
+    public function addStudentToTutor($studentId)
+    {
+        if ($this->isStudent()) {
+            throw new \Exception("Only tutors can add students.");
+        }
+        if ($this->students()->where('student_id', $studentId)->exists()) {
+            throw new \Exception("Student already added.");
+        }
+
+        $this->students()->attach($studentId);
+    }
+
+    public function removeStudentFromTutor($studentId)
+    {
+        if ($this->isStudent()) {
+            throw new \Exception("Only tutors can remove students.");
+        }
+        if (!$this->students()->where('student_id', $studentId)->exists()) {
+            throw new \Exception("Student not found.");
+        }
+        $this->students()->detach($studentId);
+    }
+
+    public function getStudents()
+    {
+        return $this->students()->get();
+    }
+
+    public function getTutors()
+    {
+        return $this->tutors()->get();
+    }
+
+    public function getStudentCount()
+    {
+        return $this->students()->count();
+    }
+
+    public function getTutorCount()
+    {
+        return $this->tutors()->count();
+    }
+
+    public function getStudentIds()
+    {
+        return $this->students()->pluck('id')->toArray();
+    }
+
+    public function getTutorIds()
+    {
+        return $this->tutors()->pluck('id')->toArray();
+    }
+
+    public function getStudentNames()
+    {
+        return $this->students()->pluck('name')->toArray();
+    }
+
+    public function getTutorNames()
+    {
+        return $this->tutors()->pluck('name')->toArray();
     }
 }

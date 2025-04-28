@@ -27,8 +27,16 @@
         class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64"
     >
         @foreach ($notifications as $notification)
-            <li>
-                {{$notification['message']}}
+            <li class="flex flex-row gap-1">
+
+                @if ($notification['status'] == 'pending')
+                    <b>{{$notification['message']}}</b>
+                    <button class="btn btn-sm" wire:click="acceptRequest({{$notification['id']}})">Accept</button>
+                    <button class="btn btn-sm" wire:click="rejectRequest({{$notification['id']}})">Reject</button>
+                @else
+                    {{$notification['message']}}
+                @endif
+
             </li>
         @endforeach
     </ul>

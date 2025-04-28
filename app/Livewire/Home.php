@@ -64,7 +64,10 @@ class Home extends Component
     }
 
     protected function filteredUsers($role){
-        return $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->personName, $role);
+        $users =  $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->personName, $role);
+        return $users->filter(function ($user) {
+            return $user->profile;
+        });
     }
 
     protected function filterUsersByRole($users, $role) {
@@ -75,7 +78,7 @@ class Home extends Component
 
     public function getRecommendations() {
         $role = $this->getUserRole();
-        $roleToGet = $role === 'student' || 'admin' ? 'tutor' : 'student';
+        $roleToGet = $role === ('student' || 'admin') ? 'tutor' : 'student';
         $filteredUsers = $this->filteredUsers($roleToGet);
         if (!$filteredUsers->isEmpty()) {
             $this->users = $filteredUsers;

@@ -8,15 +8,14 @@ window.TomSelect = TomSelect;
 window.Pusher = Pusher;
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',  // We'll still use Pusher for local testing
-    key: 'your-pusher-app-key',  // Can be any dummy key for local testing
-    cluster: 'your-pusher-cluster',  // Use a dummy cluster as well
+    broadcaster: 'pusher',
+    key: 'your-pusher-app-key',
+    cluster: 'your-pusher-cluster',
     forceTLS: false
 });
 
-window.Echo.channel('user.' + window.userId)  // Replace `userId` with the authenticated user's ID
+window.Echo.channel('user.' + window.userId)
     .listen('MatchRequestSent', (event) => {
-        console.log(event);  // Check if the event is coming through
-        // Optionally, update the Livewire component
+        console.log(event);
         Livewire.emit('updateNotifications', event.matchRequest);
     });

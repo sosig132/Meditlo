@@ -31,10 +31,38 @@ class Notifications extends Component
                 'sender_name' => $sender ? $sender->name : 'Unknown',
                 'message' => $notification->message,
                 'created_at' => $notification->created_at,
+                'status' => $notification->status,
             ];
         })->toArray();
         // show only the message
         $this->notificationCount = count($this->notifications);
+    }
+
+    public function acceptRequest($notificationId) {
+        $notification = MatchRequest::find($notificationId);
+        if ($notification) {
+            $notification->markAsAccepted();
+            $this->loadNotifications();
+        }
+        
+        $user = Auth::user()->id;
+        $userModel = new User();
+        $user = $userModel->find($user);
+        if ($user->isTutor()) {
+            $user->addStudentToTutor($notification->sender_id);
+        }
+        else {
+            $user = $userModel->find($notification->sender_id);
+            $user->addStudentToTutor(Auth::user()->id);
+        }
+    }
+
+    public function rejectRequest($notificationId) {
+        $notification = MatchRequest::find($notificationId);
+        if ($notification) {
+            $notification->markAsRejected();
+            $this->loadNotifications();
+        }
     }
 
     public function sendMatchRequest($userId) {
@@ -44,7 +72,7 @@ class Notifications extends Component
         $matchRequest = MatchRequest::create([
             'sender_id' => $user->id,
             'receiver_id' => $userId,
-            'message' => 'I would like to connect with you!',
+            'message' => `<a href="/profile/{$user->id}">$user->name</a> would like to connect with you!`,
         ]);
 
         // Optionally, trigger a notification or other logic

@@ -32,10 +32,16 @@ class ResetPassword extends Component
         $this->user_model = new User();
     }
 
-    private function checkToken() {
-        $token = $this->password_reset_service->getUserByToken($this->token);
+    public function hydrate() {
+        $this->password_reset_service = new PasswordResetService();
+        $this->user_model = new User();
+    }
 
-        return $token;
+    private function checkToken() {
+        $this->password_reset_service = new PasswordResetService();
+        $user = $this->password_reset_service->getUserByToken($this->token);
+
+        return $user;
     }
 
     public function resetPassword()

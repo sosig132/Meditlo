@@ -19,7 +19,7 @@
     <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 w-full flex-1 mt-5">
         <h2 class="text-2xl font-bold mb-4">Rezultate</h2>
 
-        <div class="gap-4 w-full">
+        <div class="gap-4 w-full flex flex-col">
             @if ($users->isEmpty())
                 <p class="text-gray-400">Nu am gasit utilizatori care sa corespunda criteriilor tale.</p>
             @else
