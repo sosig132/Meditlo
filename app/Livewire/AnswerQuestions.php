@@ -105,7 +105,7 @@ class AnswerQuestions extends Component
 
     private function getPossibleAnswersForAll(){
 
-        return $this->answersModel->getPossibleAnswers();
+        return PossibleAnswer::getPossibleAnswers();
     }
 
     private function getAnswerQuestionNumber($answerId)
@@ -138,7 +138,7 @@ class AnswerQuestions extends Component
             $user->makeTutor();
         }
 
-        $this->answersModel->addUserAnswers($this->checkedAnswers, $user->id);
+        Answer::addUserAnswers($this->checkedAnswers, $user->id);
         $this->alertSuccess('Answers submitted successfully!');
         return redirect()->route('home');
     }

@@ -42,4 +42,13 @@ class MatchRequestSent
     {
         return 'match-request-sent';
     }
+    public function broadcastWith()
+    {
+        return [
+            'sender_id' => $this->matchRequest->sender_id,
+            'receiver_id' => $this->matchRequest->receiver_id,
+            'status' => $this->matchRequest->status,
+            'message' => "New match request from user {$this->matchRequest->sender_id}.",
+        ];
+    }
 }

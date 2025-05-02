@@ -41,3 +41,17 @@
         @endforeach
     </ul>
 </div>
+
+@script
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const userId = window.Laravel?.userId;
+
+      window.Echo.channel(`user.${userId}`)
+          .listen('match-request-sent', (notification) => {
+              Livewire.dispatch('updateNotifications', notification);
+          });
+  });
+</script>
+
+@endscript

@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\MatchRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\MatchRequestNotification;
 
 class Notifications extends Component
 {
@@ -66,22 +67,23 @@ class Notifications extends Component
     }
 
     public function sendMatchRequest($userId) {
-        $user = Auth::user();
-
-        // Create a new match request
-        $matchRequest = MatchRequest::create([
-            'sender_id' => $user->id,
-            'receiver_id' => $userId,
-            'message' => `<a href="/profile/{$user->id}">$user->name</a> would like to connect with you!`,
-        ]);
-
-        // Optionally, trigger a notification or other logic
-        event(new MatchRequestSent($matchRequest));
-        return response()->json(['message' => 'Match request sent successfully!']);
+      $user = Auth::user();
+  
+      $matchRequest = MatchRequest::create([
+          'sender_id' => $user->id,
+          'receiver_id' => $userId,
+          'message' => "<a href=\"/profile/{$user->id}\">{$user->name}</a> would like to connect with you!",
+      ]);
+  
+      event(new MatchRequestSent($matchRequest));
+      $receiver = User::find($userId);
+      $receiver->notify(new MatchRequestNotification($matchRequest));
+      
+      return response()->json(['message' => 'Match request sent successfully!']);
     }
 
     public function updateNotifications($matchRequest) {
-        $this->notifications[] = $matchRequest;
+        $this->loadNotifications();
     }
 
     public function render()

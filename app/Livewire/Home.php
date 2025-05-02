@@ -78,7 +78,7 @@ class Home extends Component
 
     public function getRecommendations() {
         $role = $this->getUserRole();
-        $roleToGet = $role === ('student' || 'admin') ? 'tutor' : 'student';
+        $roleToGet = ($role === 'student' || $role === 'admin') ? 'tutor' : 'student';
         $filteredUsers = $this->filteredUsers($roleToGet);
         if (!$filteredUsers->isEmpty()) {
             $this->users = $filteredUsers;
