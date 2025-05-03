@@ -31,11 +31,6 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class, 'user_id');
     }
 
-    public function matchRequests()
-    {
-        return $this->hasMany(MatchRequest::class, 'receiver_id');
-    }
-
     public function students()
     {
         return $this->belongsToMany(User::class, 'tutors_students', 'tutor_id', 'student_id');
@@ -172,6 +167,19 @@ class User extends Authenticatable
         $this->students()->attach($studentId);
     }
 
+    public static function addStudentToTutorStatic($tutorId, $studentId)
+    {
+        $tutor = self::find($tutorId);
+        if (!$tutor) {
+            throw new \Exception("Tutor not found.");
+        }
+        if ($tutor->students()->where('student_id', $studentId)->exists()) {
+            return;
+        }
+        $tutor->students()->attach($studentId);
+
+    }
+
     public function removeStudentFromTutor($studentId)
     {
         if ($this->isStudent()) {
@@ -181,6 +189,15 @@ class User extends Authenticatable
             throw new \Exception("Student not found.");
         }
         $this->students()->detach($studentId);
+    }
+
+    public static function checkIfStudentIsInTutorList($tutorId, $studentId)
+    {
+        return self::where('id', $tutorId)
+            ->whereHas('students', function ($query) use ($studentId) {
+                $query->where('student_id', $studentId);
+            })
+            ->exists();
     }
 
     public function getStudents()

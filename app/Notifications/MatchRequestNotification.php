@@ -3,49 +3,45 @@
 namespace App\Notifications;
 
 use App\Models\MatchRequest;
+use App\Models\User;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-class MatchRequestNotification extends Notification
+use Illuminate\Support\Facades\Auth;
+class MatchRequestNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+  use Queueable;
+  protected $senderId;
+  protected $senderName;
+  public function __construct($senderId, $senderName){
+    $this->senderId = $senderId;
+    $this->senderName = $senderName;
+  }
 
-    protected $matchRequest;
+  public function via($notifiable)
+  {
+    return ['database', 'broadcast'];
+  }
 
-    public function __construct(MatchRequest $matchRequest)
-    {
-        $this->matchRequest = $matchRequest;
-    }
-
-    public function via($notifiable)
-    {
-        return ['database', 'broadcast'];
-    }
-
-    public function toDatabase($notifiable)
-    {
-        return [
-            'sender_id' => $this->matchRequest->sender_id,
-            'receiver_id' => $this->matchRequest->receiver_id,
-            'status' => $this->matchRequest->status,
-            'message' => "New request!",
-        ];
-    }
-    public function toBroadcast($notifiable)
-    {
-      \Log::info('Broadcasting MatchRequestNotification', [
-        'user_id' => $notifiable->id,
-        'data' => [
-            'sender_id' => $this->matchRequest->sender_id,
-            'receiver_id' => $this->matchRequest->receiver_id,
-        ]
+  public function toDatabase($notifiable)
+  {
+    return [
+      'sender_id' => $this->senderId,
+      'receiver_id' => $notifiable->id,
+      'status' => 'pending',
+      'message' => "New request from user <a href='/profile/{$this->senderId}'>{$this->senderName}!</a>",
+    ];
+  }
+  public function toBroadcast($notifiable)
+  {
+    return new BroadcastMessage([
+      'sender_id' => $this->senderId,
+      'receiver_id' => $notifiable->id,
+      'status' => 'pending',
+      'message' => "New request from user <a href='/profile/{$this->senderId}' >{$this->senderName}!</a>",
     ]);
-      return new BroadcastMessage([
-          'sender_id' => $this->matchRequest->sender_id,
-          'receiver_id' => $this->matchRequest->receiver_id,
-          'status' => $this->matchRequest->status,
-          'message' => "New request from user {$this->matchRequest->sender_id}!",
-    ]);
-}
+  }
 }

@@ -59,7 +59,7 @@
                 </button>
                 <div class="avatar h-20 w-20 mx-auto">
                     <div class="w-20 h-20 rounded-full">
-                        <img src="{{ $modalUser?->profile->photo ? Storage::url($modalUser->profile->photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
+                        <img src="{{ $modalUser?->profile->photo ? Storage::url($modalUser?->profile->photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
                             alt="Profile Photo">
                     </div>
                 </div>
