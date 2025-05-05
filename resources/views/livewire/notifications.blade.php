@@ -31,17 +31,13 @@
         <ul x-show="show" x-transition @click.away="show = false"
             class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64">
             @foreach ($notifications as $notification)
-                <li class="notification flex flex-row gap-1" wire:click="openRequestModal('{{ $notification['id'] }}')" role="button" tabindex="0">
+                <li class="notification flex flex-row gap-1"
+                    {{ $notification['type'] === 'match_request' ? "wire:click=openRequestModal('{$notification['id']}')" : '' }}
+                    role="button" tabindex="0">
 
-                    @if ($notification['status'] == 'pending')
-                        <b class="inline" data-type="{{ $notification['type'] }}"
-                            data-id="{{ $notification['id'] }}">{!! str_replace(
-                              '<a',
-                              '<a onclick="event.stopPropagation()"',
-                              $notification['message']
-                          ) !!}</b>
-                        {{-- <button class="btn btn-sm" wire:click="acceptRequest({{$notification['id']}})">Accept</button>
-                    <button class="btn btn-sm" wire:click="rejectRequest({{$notification['id']}})">Reject</button> --}}
+                    @if ($notification['type'] == 'match_request')
+                        <p class="inline" data-type="{{ $notification['type'] }}"
+                            data-id="{{ $notification['id'] }}">{!! str_replace('<a', '<a class="underline font-bold" onclick="event.stopPropagation()"', $notification['message']) !!}</p>
                     @else
                         {{ $notification['message'] }}
                     @endif
@@ -73,7 +69,7 @@
                 console.log(notification);
                 Livewire.dispatch('updateNotifications', notification);
             });
-        
+
         window.addEventListener('show-request-modal', () => {
             const modal = document.getElementById('request_modal');
             modal.showModal();

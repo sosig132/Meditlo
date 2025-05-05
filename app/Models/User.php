@@ -239,4 +239,37 @@ class User extends Authenticatable
     {
         return $this->tutors()->pluck('name')->toArray();
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class, 'user_one_id')
+            ->orWhere('user_two_id', $this->id);
+    }
+
+    public function getAllUserConversations()
+    {
+        return $this->conversations()
+            ->with(['messages' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
+            ->get();
+    }
+    public function getUnreadMessagesCount()
+    {
+        return $this->messages()->where('read', false)->count();
+    }
+
+    public function getConversationUnreadMessagesCount($conversationId)
+    {
+        return $this->messages()
+            ->where('conversation_id', $conversationId)
+            ->where('read', false)
+            ->count();
+    }
+
 }

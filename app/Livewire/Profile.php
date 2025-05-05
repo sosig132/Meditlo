@@ -25,9 +25,9 @@ class Profile extends Component
     public $userId;
     public $photo;
     private $user_model;
-    private $materii = [];
-    private $nivel = [];
-    private $stil_invatare = [];
+    public $materii = [];
+    public $nivel = [];
+    public $stil_invatare = [];
     private $profile_model;
     public function mount($id)
     {
