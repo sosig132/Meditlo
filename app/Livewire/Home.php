@@ -66,7 +66,8 @@ class Home extends Component
     protected function filteredUsers($role){
         $users =  $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->personName, $role);
         return $users->filter(function ($user) {
-            return $user->profile;
+          // and user is not in auth user's match requests or tutor or student  
+          return $user->profile && !User::checkIfStudentIsInTutorList(Auth::id(), $user->id) && !User::checkIfStudentIsInTutorList($user->id, Auth::id());
         });
     }
 

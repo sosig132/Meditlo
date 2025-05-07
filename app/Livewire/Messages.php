@@ -16,7 +16,7 @@ class Messages extends Component
   public $messageText = '';
   public $conversationId = null;
   public $selectedChatter = null;
-  protected $listeners = ['messageReceived' => 'addMessage'];
+  protected $listeners = ['messageReceived'];
   public $conversationsCreated = false;
   public function mount()
   {
@@ -41,6 +41,7 @@ class Messages extends Component
     ]);
 
     $this->chatters = $this->chatters->toArray();
+    $this->unreadMessagesCount = $user->getUnreadMessagesCount();
   }
 
   public function createConversationsForUser()
@@ -66,6 +67,7 @@ class Messages extends Component
     $user = Auth::user();
     $this->selectedChatter = $chatterId;
     $this->conversationId = $this->getConversationId($chatterId);
+    Conversation::markMessagesAsRead($this->conversationId);
     $this->messages = Conversation::find($this->conversationId)->getMessages($this->conversationId);
     $this->unreadMessagesCount -= $user->getConversationUnreadMessagesCount($this->conversationId);
     $this->dispatch('scrollToBottom');
@@ -98,27 +100,48 @@ class Messages extends Component
   {
     if (trim($this->messageText) === '')
       return;
-    // Save the new message to the database
+
     $message = Message::create([
       'conversation_id' => $this->conversationId,
       'user_id' => Auth::id(),
       'body' => $this->messageText,
     ]);
 
-    // Optionally broadcast the message via Pusher or any other event broadcaster
     broadcast(new \App\Events\MessageSent($message))->toOthers();
 
-    // Add the message to the component’s messages array
     $this->messages[] = $message;
 
-    // Clear the message input field
     $this->messageText = '';
+    $this->dispatch('scrollToBottom');
   }
 
-  public function addMessage($message)
+  public function messageReceived($message)
   {
     \Log::info('Received message:', $message);
     $this->messages[] = $message;
+    $this->unreadMessagesCount++;
+    // now increase unread_messages count for the chatter who sent the message
+    $chatterId = $message['user']['id'];
+    $chatterConversationId = $this->getConversationId($chatterId);
+    $chatter = collect($this->chatters)->firstWhere('id', $chatterId);
+    if ($chatter) {
+      $chatter['unread_messages']++;
+      $this->chatters = collect($this->chatters)->map(function ($chatter) use ($chatterId, $chatterConversationId) {
+        if ($chatter['id'] == $chatterId) {
+          $chatter['unread_messages']++;
+          $chatter['last_message'] = Conversation::find($chatterConversationId)->getLastMessage($chatterConversationId);
+        }
+        return $chatter;
+      });
+    }
+  }
+
+  public function deselectChatter()
+  {
+    $this->selectedChatter = null;
+    $this->conversationId = null;
+    $this->messages = [];
+    $this->dispatch('scrollToTop');
   }
   
   public function toggleDrawer()

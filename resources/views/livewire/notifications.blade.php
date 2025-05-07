@@ -66,7 +66,6 @@
         const userId = window.Laravel?.userId;
         window.Echo.private(`App.Models.User.${userId}`)
             .notification((notification) => {
-                console.log(notification);
                 Livewire.dispatch('updateNotifications', notification);
             });
 

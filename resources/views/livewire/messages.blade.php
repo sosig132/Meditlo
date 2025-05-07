@@ -1,4 +1,6 @@
 <div>
+  <div>
+
     <button class="btn btn-ghost rounded" wire:click="toggleDrawer">
         <svg fill="#FFFFFF" height="24px" width="24px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 324.143 324.143" xml:space="preserve">
@@ -20,39 +22,67 @@
             </g>
         </svg>
     </button>
+    @if ($unreadMessagesCount > 0)
+            <span class="absolute top-0 right-0 text-xs text-white bg-red-500 rounded-full px-2 py-1">
+                {{ $unreadMessagesCount }}
+            </span>
+        @endif
+  </div>
 
     <div class="drawer drawer-end">
         <input id="chat-drawer" type="checkbox" class="drawer-toggle" wire:model="showDrawer" />
         <div class="drawer-side z-50">
             <label for="chat-drawer" class="drawer-overlay"></label>
             <div class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4 sticky top-0 z-10 bg-base-200 py-2">
+                    @if ($selectedChatter)
+                        <button wire:click="deselectChatter" class="btn btn-ghost rounded">←</button>
+                    @endif
+                    
                     <h2 class="text-xl font-bold">Chat</h2>
                     <label for="chat-drawer" class="btn btn-sm btn-circle btn-ghost">✕</label>
                 </div>
-                <div class="flex flex-col flex-grow overflow-y-auto">
+                <div class="scrollable flex flex-col flex-grow overflow-y-auto">
                     <div class="chat-list transition-all ease-in-out duration-300"
                         style="display: {{ $selectedChatter ? 'none' : 'block' }};">
                         @foreach ($chatters as $chatter)
                             <button wire:click="selectChatter({{ $chatter['id'] }})"
                                 class="flex items-center p-2 mb-2 w-full text-left rounded-lg hover:bg-base-300">
                                 <div class="avatar mr-2">
+                                    @if ($chatter['unread_messages'] > 0)
+                                        <span class="absolute top-[-7px] left-[-7px] text-xs text-white bg-red-500 rounded-full px-2 py-1">
+                                            {{ $chatter['unread_messages'] }}
+                                        </span>
+                                    @endif
+                                    
                                     <div class="w-10 rounded-full">
                                         <img src="{{ $chatter['profile_picture'] ? Storage::url($chatter['profile_picture']) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
                                             alt="{{ $chatter['name'] }}">
                                     </div>
                                 </div>
-                                <span class="font-medium">{{ $chatter['name'] }}</span>
-
+                                <div class="flex flex-col w-full">
+                                  <span class="font-medium">{{ $chatter['name'] }}</span>
+                                  <div class="flex flex-row">
+                                    <span class="text-sm text-gray-500">
+                                      {{ \Illuminate\Support\Str::limit($chatter['last_message']['body'], 15, '...') }}
+                                    </span>
+                                    <span class="text-sm text-gray-500 ml-auto">
+                                        {{ \Carbon\Carbon::parse($chatter['last_message']['created_at'])->diffForHumans() }}
+                                    </span>
+                                  </div>
+                                </div>
                             </button>
                         @endforeach
                     </div>
-                    <div class="selected-chat transition-all ease-in-out duration-300"
-                        style="display: {{ $selectedChatter ? 'block' : 'none' }};">
+                    <div class="selected-chat transition-all ease-in-out duration-300 flex-col"
+                        style="display: {{ $selectedChatter ? 'flex' : 'none' }};">
                         @if ($selectedChatter)
                             @foreach ($messages as $message)
-                                <div class="mt-4 p-4 rounded-lg shadow-md">
+                                <div class="mt-4 p-2 rounded-lg shadow-md {{ $message['user_id'] == auth()->id() ? 'bg-blue-500 text-white align-left ml-auto' : 'bg-gray-200 mr-auto' }} w-fit">
                                     {{ $message['body'] }}
+                                    <div class="text-[10px] mt-1 {{ $message['user_id'] == auth()->id() ? 'text-white' : 'text-black' }}">
+                                        {{ \Carbon\Carbon::parse($message['created_at'])->diffForHumans() }}
+                                    </div>
                                 </div>
                             @endforeach
                         @endif
@@ -60,7 +90,7 @@
 
                 </div>
                 @if ($selectedChatter)
-                    <div class="mt-4">
+                    <div class="mt-4 sticky bottom-0 bg-base-200 p-2">
                         <div class="flex items-center space-x-2">
                             <input type="text" wire:model="messageText" wire:keydown.enter="sendMessage"
                                 class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -80,9 +110,23 @@
             const conversationId = @json($chatter['conversation_id']);
             window.Echo.private(`chat.${conversationId}`)
                 .listen('MessageSent', (e) => {
-                    Livewire.dispatch('messageReceived', e.message);
+                    console.log('Message received:', {message: e.message});
+                    Livewire.dispatch('messageReceived', {message: e.message});
                 });
         </script>
       @endscript
     @endforeach
 @endif
+
+@script
+<script>
+    // TODO: make this scroll to bottom when new message is received
+    window.addEventListener('scrollToBottom', () => {
+        var chatList = document.querySelector('.scrollable');
+        chatList.scroll(0, chatList.scrollHeight)
+        console.log(chatList.scrollTop, chatList.scrollHeight, chatList);
+    });
+
+
+</script>
+@endscript
