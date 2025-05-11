@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Answer;
+use App\Models\Categories;
 use Livewire\Component;
 use App\Models\User;
 use Livewire\WithFileUploads;
@@ -151,6 +152,25 @@ class Profile extends Component
         $this->showAlert($check, "Descrierea ta");
 
         $this->editingAbout = false;
+    }
+
+    public function addCategory($categoryName) 
+    {
+        $this->validate([
+            'categoryName' => 'required|string|max:255',
+        ]);
+
+        $check = Categories::addCategory($categoryName, $this->userId);
+
+        if (!$check) {
+            $this->alert('error', 'A aparut o eroare la adaugarea categoriei!', [
+                'position' => 'center',
+                'timer' => 3000,
+                'toast' => true,
+            ]);
+        }
+
+        $this->dispatch('closeAddCategoryModal');
     }
 
     public function render()
