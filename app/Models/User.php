@@ -272,4 +272,28 @@ class User extends Authenticatable
             ->count();
     }
 
+    public function userHasCategory($categoryName)
+    {
+        if (!$this->categories()->exists()) {
+            return false;
+        }
+        if (!$this->categories()->where('name', $categoryName)->exists()) {
+            return false;
+        }
+        $categoryId = Categories::where('name', $categoryName)->first()->id;
+        return $this->categories()->where('id', $categoryId)->exists();
+    }
+    public function getCategoryId($categoryName)
+    {
+      // get the category ID by name(from the user)
+      return $this->categories()->where('name', $categoryName)->first()->id;
+    }
+    public function categories()
+    {
+        return $this->hasMany(Categories::class, 'user_id');
+    }
+    public function getCategories()
+    {
+        return $this->categories()->get();
+    }
 }

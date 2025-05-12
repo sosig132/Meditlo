@@ -32,7 +32,7 @@
                             </div>
                         </div>
                         <div class="flex flex-col">
-                            <h3 class="text-xl font-semibold mb-1">{{ $user->name }}</h3>
+                            <a href="/profile/{{$user->id}}"><h3 class="text-xl font-semibold mb-1">{{ $user->name }}</h3></a>
                             <div class="flex-row gap-3 hidden md:flex">
                                 @foreach ($user->answers as $answer)
                                     @if ($answer->possibleAnswer->question_number == 2)
