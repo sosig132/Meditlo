@@ -1,5 +1,6 @@
 <?php
 # Controllers
+use App\Livewire\TutorDashboard;
 use App\Livewire\Welcome;
 use App\Livewire\Home;
 use App\Livewire\Logout;
@@ -29,5 +30,6 @@ Route::get('/admin-dashboard', AdminDashboard::class)->name('admin-dashboard');
 Route::get('/answer-questions', AnswerQuestions::class)->name('answer-questions');
 Route::get('/profile/{id}', Profile::class)->name('profile')->middleware('check.questions');
 Route::get('/reset-password/{token}', ResetPassword::class)->name('reset-password');
+Route::get('/tutor-dashboard', TutorDashboard::class)->name('tutor-dashboard');
 Route::post('/match-requests/{receiverId}', [MatchRequestController::class, 'create'])
     ->name('match-request.create');

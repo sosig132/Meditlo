@@ -19,8 +19,12 @@
         @auth
         <ul class="menu menu-horizontal px-1">
             <li><a href="{{ route('home') }}" class="btn btn-ghost text-xl">Home</a></li>
-
-            <li><a class="btn btn-ghost text-xl">Meditatii</a></li>
+            @tutor
+              <li><a href="{{ route('tutor-dashboard') }}" class="btn btn-ghost text-xl">Dashboard</a></li>
+            @endtutor
+            @student
+              <li><a href="{{ route('student-dashboard') }}" class="btn btn-ghost text-xl">Tutors</a></li>
+            @endstudent
           </ul>
         @endauth
     </div>
