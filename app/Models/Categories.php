@@ -10,8 +10,12 @@ class Categories extends Model
     use HasFactory;
     protected $table = 'categories';
     protected $fillable = ['name', 'user_id'];
-    public function user() {
+    public function tutor() {
         return $this->belongsTo(User::class);
+    }
+    
+    public function students() {
+       return $this->belongsToMany(User::class, 'category_user', 'category_id', 'user_id');
     }
     public function materials() {
         return $this->hasMany(Materials::class);

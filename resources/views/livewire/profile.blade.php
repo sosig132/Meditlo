@@ -100,7 +100,7 @@
                 @endif
             </div>
         </div>
-        @if (Auth::id() == $userId)
+        @if (Auth::id() == $userId && Auth::user()->role == 'tutor')
         <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
             <div class="flex justify-center profile:justify-start">
                 <button

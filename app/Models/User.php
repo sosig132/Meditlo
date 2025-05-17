@@ -189,6 +189,7 @@ class User extends Authenticatable
             throw new \Exception("Student not found.");
         }
         $this->students()->detach($studentId);
+        $this->ownedCategories()->where('user_id', $studentId)->delete();
     }
 
     public static function checkIfStudentIsInTutorList($tutorId, $studentId)
@@ -272,28 +273,66 @@ class User extends Authenticatable
             ->count();
     }
 
-    public function userHasCategory($categoryName)
+    public function userHasOwnedCategory($categoryName)
     {
-        if (!$this->categories()->exists()) {
+        if (!$this->ownedCategories()->exists()) {
             return false;
         }
-        if (!$this->categories()->where('name', $categoryName)->exists()) {
+        if (!$this->ownedCategories()->where('name', $categoryName)->exists()) {
             return false;
         }
         $categoryId = Categories::where('name', $categoryName)->first()->id;
-        return $this->categories()->where('id', $categoryId)->exists();
+        return $this->ownedCategories()->where('id', $categoryId)->exists();
     }
     public function getCategoryId($categoryName)
     {
-      // get the category ID by name(from the user)
       return $this->categories()->where('name', $categoryName)->first()->id;
     }
-    public function categories()
+
+    public function getOwnedCategoryId($categoryName)
+    {
+        return $this->ownedCategories()->where('name', $categoryName)->first()->id;
+    }
+    public function ownedCategories()
     {
         return $this->hasMany(Categories::class, 'user_id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Categories::class, 'category_user', 'user_id', 'category_id');
     }
     public function getCategories()
     {
         return $this->categories()->get();
     }
-}
+    public function getOwnedCategories()
+    {
+        return $this->ownedCategories()->get();
+    }
+    public static function getStudentCategories($studentId) 
+    {
+        $student = self::find($studentId);
+        if (!$student) {
+            throw new \Exception("Student not found.");
+        }
+        return $student->categories()->get();
+    }
+
+    public static function assignCategoriesToStudent($categories, $studentId)
+    {
+        $student = self::find($studentId);
+        if (!$student) {
+            throw new \Exception("Student not found.");
+        }
+        $student->categories()->sync($categories);
+    }
+    public static function getStudentCategoriesForTutor($studentId, $tutorId)
+    {
+        $student = self::find($studentId);
+        if (!$student) {
+            throw new \Exception("Student not found.");
+        }
+        return $student->categories()->where('categories.user_id', $tutorId)->get();
+    }
+  }

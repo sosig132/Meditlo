@@ -29,7 +29,7 @@
     </style>
 
 </head>
-<body>
+<body class="mb-5">
     @include('components/navbar')
 
     {{-- Page content goes here --}}

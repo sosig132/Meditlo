@@ -50,7 +50,12 @@ class Profile extends Component
     $this->materii = $answers_model->getUserAnswersForQuestion($this->userId, 2);
     $this->stil_invatare = $answers_model->getUserAnswersForQuestion($this->userId, 3);
     $this->nivel = $answers_model->getUserAnswersForQuestion($this->userId, 4);
-    $this->categories = $this->user->getCategories();
+    if ($id == auth()->user()->id) {
+      $this->categories = $this->user->getOwnedCategories();
+    }
+    else if (User::checkIfStudentIsInTutorList($this->userId, auth()->user()->id)) {
+      $this->categories = User::getStudentCategoriesForTutor(auth()->user()->id, $this->userId);
+    }
   }
 
   public function hydrate() {
@@ -167,6 +172,9 @@ class Profile extends Component
 
   public function addCategory()
   {
+    if (!$this->user->isTutor()) {
+      return;
+    }
 
     if (empty($this->newCategory)) {
       $this->dispatch('closeAddCategoryModal');
@@ -189,7 +197,7 @@ class Profile extends Component
       ]);
       return;
     }
-    if ($this->user->userHasCategory($this->newCategory)) {
+    if ($this->user->userHasOwnedCategory($this->newCategory)) {
       $this->dispatch('closeAddCategoryModal');
       $this->alert('error', 'Categoria exista deja!', [
         'position' => 'center',
@@ -208,18 +216,21 @@ class Profile extends Component
         'toast' => true,
       ]);
     }
-    $this->categories = $this->user->getCategories();
+    $this->categories = $this->user->getOwnedCategories();
     $this->dispatch('closeAddCategoryModal');
   }
 
   public function deleteCategory()
   {
-    if ($this->categoryToDelete && $this->user->userHasCategory($this->categoryToDelete)) {
-      $categoryId = $this->user->getCategoryId($this->categoryToDelete);
+    if (!$this->user->isTutor()) {
+      return;
+    }
+    if ($this->categoryToDelete && $this->user->userHasOwnedCategory($this->categoryToDelete)) {
+      $categoryId = $this->user->getOwnedCategoryId($this->categoryToDelete);
       $check = Categories::deleteCategory($categoryId);
       $this->dispatch('closeDeleteCategoryModal');
       $this->categoryToDelete = null;
-      $this->categories = $this->user->getCategories();
+      $this->categories = $this->user->getOwnedCategories();
       if (!$check) {
         $this->alert('error', 'A aparut o eroare la stergerea categoriei!', [
           'position' => 'center',
