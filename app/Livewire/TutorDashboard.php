@@ -23,6 +23,8 @@ class TutorDashboard extends Component
     public $documents = [];
     public $videosCount = 0;
     public $documentsCount = 0;
+    public $videoSource = null;
+    public $selectedCategoriesForContent;
     public function mount() {
       
         $this->user = Auth::user();
