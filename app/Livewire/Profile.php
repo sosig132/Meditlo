@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Answer;
 use App\Models\Categories;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\User;
 use Livewire\WithFileUploads;
@@ -82,6 +83,9 @@ class Profile extends Component
 
   public function toggleEdit($field)
   {
+    if (Auth::id() != $this->userId) {
+      return;
+    }
     if ($field === 'phone') {
       $this->editingPhone = !$this->editingPhone;
     } elseif ($field === 'email') {
@@ -93,6 +97,9 @@ class Profile extends Component
 
   public function updatePhone()
   {
+    if (Auth::id() != $this->userId) {
+      return;
+    }
     $this->validate([
       'newPhone' => 'nullable|string|max:15',
     ]);
@@ -111,6 +118,9 @@ class Profile extends Component
 
   public function updatedPhoto()
   {
+    if (Auth::id() != $this->userId) {
+      return;
+    }
     $this->validate([
       'photo' => 'image|max:1024',
     ]);
@@ -134,7 +144,6 @@ class Profile extends Component
 
   private function showAlert($boolean, $type)
   {
-
     $gen = null;
     if ($type == "Numarul de telefon") {
       $gen = "a fost schimbat";
@@ -159,6 +168,9 @@ class Profile extends Component
 
   public function updateAboutMe()
   {
+    if (Auth::id() != $this->userId) {
+      return;
+    }
     $this->validate([
       'newAboutMe' => 'nullable|string|max:500',
     ]);

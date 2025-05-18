@@ -58,6 +58,17 @@ class Categories extends Model
     public static function getCategoryId($categoryName) {
         return self::where('name', $categoryName)->first()->id;
     }
-    
+    public function content()
+    {
+        return $this->belongsToMany(Content::class, 'content_category', 'category_id', 'content_id');
+    }
 
+    public function getContent()
+    {
+        return $this->content()->get();
+    }
+    public function addContent($contentId)
+    {
+        return $this->content()->attach($contentId);
+    }
 }

@@ -19,6 +19,10 @@ class TutorDashboard extends Component
     public $selectedStudentToRemoveId = null;
     public $user;
     public $showRemoveStudentModal = false;
+    public $videos = [];
+    public $documents = [];
+    public $videosCount = 0;
+    public $documentsCount = 0;
     public function mount() {
       
         $this->user = Auth::user();
@@ -27,6 +31,10 @@ class TutorDashboard extends Component
         }
         $this->students = $this->user->getStudents();
         $this->categories = $this->user->getOwnedCategories();
+        $this->videos = $this->user->getVideos();
+        $this->documents = $this->user->getDocuments();
+        $this->videosCount = $this->user->getVideosCount();
+        $this->documentsCount = $this->user->getDocumentsCount();
     }
 
     public function hydrate() {
@@ -85,7 +93,6 @@ class TutorDashboard extends Component
         $this->selectedCategories = $categories;
     }
 
-    
     public function render()
     {
         return view('livewire.tutor-dashboard');

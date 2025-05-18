@@ -335,4 +335,29 @@ class User extends Authenticatable
         }
         return $student->categories()->where('categories.user_id', $tutorId)->get();
     }
+
+    public function getVideos()
+    {
+        return $this->hasMany(Content::class, 'user_id')->where('type', 'video')->get();
+    }
+    public function getDocuments()
+    {
+        return $this->hasMany(Content::class, 'user_id')->where('type', 'document')->get();
+    }
+    public function getVideosCount()
+    {
+        return $this->getVideos()->count();
+    }
+    public function getDocumentsCount()
+    {
+        return $this->getDocuments()->count();
+    }
+    public function getContent()
+    {
+        return $this->hasMany(Content::class, 'user_id');
+    }
+    public function getContentCount()
+    {
+        return $this->getContent()->count();
+    }
   }

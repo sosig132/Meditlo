@@ -7,9 +7,9 @@
                 <div class="relative group">
                     <img src="{{ $photo ? asset('storage/' . $photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
                         id="profile-image" alt="Profile Photo"
-                        class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 cursor-pointer transition duration-300 ease-in-out transform group-hover:scale-105"
+                        class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 @if(Auth::id() == $user->id) cursor-pointer transition duration-300 ease-in-out transform group-hover:scale-105 @endif"
                         wire:click="triggerUpload">
-
+                    @if (Auth::id() == $user->id)
                     <div id="overlay"
                         class="cursor-pointer absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         wire:click="triggerUpload">
@@ -17,7 +17,8 @@
                     </div>
 
                     <input type="file" id="photo-upload" wire:model="photo" class="hidden" accept="image/*">
-                </div>
+                    @endif
+                  </div>
                 <div class="text-center profile:text-left">
                     <h2 class="text-3xl font-semibold text-gray-100">{{ $user->name }}</h2>
                     <p class="text-gray-300 mt-2">{{ ucfirst($user->role) }}</p>
