@@ -137,68 +137,67 @@
                 </div>
             </dialog>
         </div>
-        <div>
+        <div x-data="{ videoSource: 'Youtube' }">
             <dialog id="add_video_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
                 <div class="modal-box flex flex-col">
-                    <div x-data="{ source: 'Youtube' }" class="space-y-4">
+                    <div class="space-y-4">
                         <h3 class="text-center text-xl font-semibold mt-4">Add Video</h3>
 
-                        <!-- Video Source Type -->
                         <div>
                             <label class="font-medium block mb-1">Video Source</label>
-                            <select x-model="source" class="select select-bordered w-full">
+                            <select x-model="videoSource" wire:model.defer="newVideoData.source"
+                                class="select select-bordered w-full">
                                 <option value="Youtube">Youtube</option>
                                 <option value="File">File</option>
                             </select>
                         </div>
 
                         <!-- Youtube URL -->
-                        <div x-show="source === 'Youtube'" x-transition>
+                        <div x-show="videoSource === 'Youtube'">
                             <label class="font-medium block mb-1">Video URL</label>
-                            <input type="url" wire:model.defer="video_url" class="input input-bordered w-full"
-                                placeholder="https://youtube.com/..." />
+                            <input type="url" wire:model.defer="newVideoData.video_url"
+                                class="input input-bordered w-full" placeholder="https://youtube.com/..." />
                         </div>
 
                         <!-- File Upload -->
-                        <div x-show="source === 'File'" x-transition>
+                        <div x-show="videoSource === 'File'">
                             <label class="font-medium block mb-1">Video File</label>
-                            <input type="file" wire:model="video_file" accept="video/*"
+                            <input type="file" wire:model.defer="videoFile" accept="video/*"
                                 class="file-input file-input-bordered w-full" />
                         </div>
 
-                        <!-- Thumbnail Upload (Only when File is selected) -->
-                        <div x-show="source === 'File'" x-transition>
+                        <div x-show="videoSource === 'File'">
                             <label class="font-medium block mb-1">Thumbnail</label>
-                            <input type="file" wire:model="thumbnail" accept="image/*"
+                            <input type="file" wire:model.defer="newVideoData.thumbnail" accept="image/*"
                                 class="file-input file-input-bordered w-full" />
                         </div>
 
-                        <!-- Description (Always shown) -->
                         <div>
                             <label class="font-medium block mb-1">Description</label>
-                            <textarea wire:model.defer="description" rows="3" class="textarea textarea-bordered w-full"></textarea>
+                            <textarea wire:model.defer="newVideoData.description" rows="3" class="textarea textarea-bordered w-full"></textarea>
                         </div>
+
                         <div>
                             @foreach ($categories as $category)
                                 <label class="cursor-pointer">
-                                    <input type="checkbox" wire:model="selectedCategories" value="{{ $category->id }}"
-                                        class="mr-2">
+                                    <input type="checkbox" wire:model="newVideoData.selectedCategories"
+                                        value="{{ $category->id }}" class="mr-2">
                                     {{ $category->name }}
-                                </label>
-                                <br>
+                                </label><br>
                             @endforeach
                         </div>
-                        <!-- Buttons -->
+
                         <div class="flex justify-end gap-2 pt-4">
                             <form method="dialog">
                                 <button class="btn">Cancel</button>
                             </form>
-                            <button wire:click="saveVideo" class="btn btn-primary">Save</button>
+                            <button wire:click="addVideo" class="btn btn-primary">Save</button>
                         </div>
                     </div>
                 </div>
             </dialog>
         </div>
+
 
     </div>
     <div class="p-5 pl-10 flex flex-col gap-4">
