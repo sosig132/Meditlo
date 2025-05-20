@@ -32,6 +32,7 @@ class TutorDashboard extends Component
     'description' => '',
     'selectedCategories' => [],
     'source' => 'Uoutube',
+    'title' => '',
   ];
   public $videoFile = null;
 
@@ -126,26 +127,33 @@ class TutorDashboard extends Component
       'newVideoData.description' => 'required|string|max:255',
       'newVideoData.selectedCategories' => 'required|array',
       'newVideoData.source' => 'required|in:Youtube,File',
+      'newVideoData.title' => 'required|string|max:255',
     ]);
 
     if ($this->newVideoData['source'] === 'File') {
       $this->newVideoData['video_url'] = null;
       $videoUri = $this->uploadFile($this->videoFile);
+      $this->newVideoData['video_url'] = $videoUri;
     } else {
       $this->newVideoData['video_file'] = null;
       $this->newVideoData['thumbnail'] = null;
     }
-    return;
+
+    if ($this->newVideoData['thumbnail']) {
+      $this->newVideoData['thumbnail'] = $this->newVideoData['thumbnail']->store('thumbnails', 'local');
+    }
+
+
     $this->user->addVideo($this->newVideoData);
     $this->videos = $this->user->getVideos();
     $this->videosCount = $this->user->getVideosCount();
     $this->newVideoData = [
       'video_url' => '',
-      'video_file' => null,
       'thumbnail' => null,
       'description' => '',
       'selectedCategories' => [],
       'source' => 'Youtube',
+      'title' => '',
     ];
     $this->newVideoSource = null;
     $this->alert('success', 'Video added successfully.');
@@ -153,7 +161,6 @@ class TutorDashboard extends Component
 
   public function uploadFile($file)
   {
-    // try to upload the file to bunny.net and return the URL, if it fails, upload to local storage and return the URL
     try {
       $output = shell_exec('ping -c 1 video.bunnycdn.com');
       $isOnline = str_contains($output, '1 received');
@@ -165,17 +172,33 @@ class TutorDashboard extends Component
         'Content-Type' => 'application/json',
         'AccessKey' => env('BUNNY_VIDEO_API_KEY'),
       ])->post(env('BUNNY_VIDEO_API_BASE_URL') . "/library/" . env('BUNNY_VIDEO_LIBRARY_ID') . "/videos", [
-        'title' => $file->getClientOriginalName(),
-      ]);
+            'title' => $file->getClientOriginalName(),
+          ]);
 
-      // print response body
       $responseBody = json_decode($response->body(), true);
       if ($response->failed()) {
         throw new \Exception('Failed to create video: ' . $responseBody['message']);
       }
-      dd($responseBody);
-    }
-    catch (\Exception $e) {
+      $videoId = $responseBody['guid'];
+
+      $uploadResponse = Http::withHeaders([
+        'AccessKey' => env('BUNNY_VIDEO_API_KEY'),
+        'Content-Type' => 'application/octet-stream',
+      ])->withBody(
+          file_get_contents($file->getRealPath()), // raw binary
+          'application/octet-stream'
+        )->put(
+          env('BUNNY_VIDEO_API_BASE_URL') . "/library/" . env('BUNNY_VIDEO_LIBRARY_ID') . "/videos/" . $videoId . "?enabledResolutions=720p"
+        );
+      $responseBody = json_decode($response->body(), true);
+      
+      if ($uploadResponse->failed()) {
+        throw new \Exception('Failed to upload video: ' . $responseBody['message']);
+      }
+
+      $this->alert('success', 'Video uploaded successfully. It will be available shortly, depending on the size of the video.');
+      return 'https://iframe.mediadelivery.net/play/' . env('BUNNY_VIDEO_LIBRARY_ID') . '/' . $videoId;
+    } catch (\Exception $e) {
       $filePath = $file->store('videos', 'local');
       return asset('storage/' . $filePath);
     }

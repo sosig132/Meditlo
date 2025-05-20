@@ -152,6 +152,11 @@
                             </select>
                         </div>
 
+                        <div>
+                            <label class="font-medium block mb-1">Video Name</label>
+                            <input type="text" wire:model.defer="newVideoData.title" class="input input-bordered w-full"
+                                placeholder="Video Name" />
+                        </div>
                         <!-- Youtube URL -->
                         <div x-show="videoSource === 'Youtube'">
                             <label class="font-medium block mb-1">Video URL</label>

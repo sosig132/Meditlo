@@ -36,7 +36,6 @@ class Content extends Model
         if ($this->source == 'youtube') {
             return $value;
         } elseif ($this->source == 'cloud') {
-            //TODO add cloud storage url + make bunny.net cdn work
             return '';
         } elseif ($this->source == 'local') {
             return asset($value);
@@ -51,5 +50,26 @@ class Content extends Model
     public function addCategories($categoryIds)
     {
         return $this->categories()->sync($categoryIds);
+    }
+
+    public static function addVideo($data) {
+        // $this->title = $data['title'];
+        // $this->description = $data['description'];
+        // $this->type = 'video';
+        // $this->uri = $data['video_url'];
+        // $this->thumbnail = $data['thumbnail'] ? $data['thumbnail'] : null;
+        // $this->source = $data['source'];
+        // $this->user_id = $data['user_id'];
+        // $this->save();
+        // return $this;
+        return self::create([
+            'user_id' => $data['user_id'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'type' => 'video',
+            'uri' => $data['video_url'],
+            'thumbnail' => $data['thumbnail'] ? $data['thumbnail'] : null,
+            'source' => $data['source'],
+        ]);
     }
 }
