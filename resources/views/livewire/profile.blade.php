@@ -7,18 +7,18 @@
                 <div class="relative group">
                     <img src="{{ $photo ? asset('storage/' . $photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
                         id="profile-image" alt="Profile Photo"
-                        class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 @if(Auth::id() == $user->id) cursor-pointer transition duration-300 ease-in-out transform group-hover:scale-105 @endif"
+                        class="w-32 h-32 rounded-full object-cover border-4 border-gray-700 @if (Auth::id() == $user->id) cursor-pointer transition duration-300 ease-in-out transform group-hover:scale-105 @endif"
                         wire:click="triggerUpload">
                     @if (Auth::id() == $user->id)
-                    <div id="overlay"
-                        class="cursor-pointer absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        wire:click="triggerUpload">
-                        <span class="text-white text-sm font-semibold">Change Photo</span>
-                    </div>
+                        <div id="overlay"
+                            class="cursor-pointer absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            wire:click="triggerUpload">
+                            <span class="text-white text-sm font-semibold">Change Photo</span>
+                        </div>
 
-                    <input type="file" id="photo-upload" wire:model="photo" class="hidden" accept="image/*">
+                        <input type="file" id="photo-upload" wire:model="photo" class="hidden" accept="image/*">
                     @endif
-                  </div>
+                </div>
                 <div class="text-center profile:text-left">
                     <h2 class="text-3xl font-semibold text-gray-100">{{ $user->name }}</h2>
                     <p class="text-gray-300 mt-2">{{ ucfirst($user->role) }}</p>
@@ -102,55 +102,76 @@
             </div>
         </div>
         @if (Auth::id() == $userId && Auth::user()->role == 'tutor')
-        <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
-            <div class="flex justify-center profile:justify-start">
-                <button
-                    class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
-                    onclick="category_modal.showModal()">
-                    <div class="w-[60px] h-[60px]">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                            <g id="SVGRepo_iconCarrier">
-                                <path
-                                    d="M12.75 8C12.75 7.58579 12.4142 7.25 12 7.25C11.5858 7.25 11.25 7.58579 11.25 8H12.75ZM11.25 16C11.25 16.4142 11.5858 16.75 12 16.75C12.4142 16.75 12.75 16.4142 12.75 16H11.25ZM8 11.25C7.58579 11.25 7.25 11.5858 7.25 12C7.25 12.4142 7.58579 12.75 8 12.75V11.25ZM16 12.75C16.4142 12.75 16.75 12.4142 16.75 12C16.75 11.5858 16.4142 11.25 16 11.25V12.75ZM11.25 8V16H12.75V8H11.25ZM8 12.75H16V11.25H8V12.75ZM20.25 12C20.25 16.5563 16.5563 20.25 12 20.25V21.75C17.3848 21.75 21.75 17.3848 21.75 12H20.25ZM12 20.25C7.44365 20.25 3.75 16.5563 3.75 12H2.25C2.25 17.3848 6.61522 21.75 12 21.75V20.25ZM3.75 12C3.75 7.44365 7.44365 3.75 12 3.75V2.25C6.61522 2.25 2.25 6.61522 2.25 12H3.75ZM12 3.75C16.5563 3.75 20.25 7.44365 20.25 12H21.75C21.75 6.61522 17.3848 2.25 12 2.25V3.75Z"
-                                    fill="#374151"></path>
-                            </g>
-                        </svg>
-                    </div>
-                    <span style="color: #647180">Adaugă o categorie</span>
-                </button>
+            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
+                <div class="flex justify-center profile:justify-start">
+                    <button
+                        class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
+                        onclick="category_modal.showModal()">
+                        <div class="w-[60px] h-[60px]">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path
+                                        d="M12.75 8C12.75 7.58579 12.4142 7.25 12 7.25C11.5858 7.25 11.25 7.58579 11.25 8H12.75ZM11.25 16C11.25 16.4142 11.5858 16.75 12 16.75C12.4142 16.75 12.75 16.4142 12.75 16H11.25ZM8 11.25C7.58579 11.25 7.25 11.5858 7.25 12C7.25 12.4142 7.58579 12.75 8 12.75V11.25ZM16 12.75C16.4142 12.75 16.75 12.4142 16.75 12C16.75 11.5858 16.4142 11.25 16 11.25V12.75ZM11.25 8V16H12.75V8H11.25ZM8 12.75H16V11.25H8V12.75ZM20.25 12C20.25 16.5563 16.5563 20.25 12 20.25V21.75C17.3848 21.75 21.75 17.3848 21.75 12H20.25ZM12 20.25C7.44365 20.25 3.75 16.5563 3.75 12H2.25C2.25 17.3848 6.61522 21.75 12 21.75V20.25ZM3.75 12C3.75 7.44365 7.44365 3.75 12 3.75V2.25C6.61522 2.25 2.25 6.61522 2.25 12H3.75ZM12 3.75C16.5563 3.75 20.25 7.44365 20.25 12H21.75C21.75 6.61522 17.3848 2.25 12 2.25V3.75Z"
+                                        fill="#374151"></path>
+                                </g>
+                            </svg>
+                        </div>
+                        <span style="color: #647180">Adaugă o categorie</span>
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="mt-8 bg-red-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
-            <div class="flex justify-center profile:justify-start">
-                <button
-                    class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
-                    onclick="delete_category_modal.showModal()">
-                    <div class="w-[60px] h-[60px]">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#323232" stroke-width="2"></path> <path d="M9 12H15" stroke="#323232" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                    </div>
-                    <span style="color: #647180"> &nbsp; Sterge o categorie</span>
-                </button>
+            <div class="mt-8 bg-red-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
+                <div class="flex justify-center profile:justify-start">
+                    <button
+                        class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
+                        onclick="delete_category_modal.showModal()">
+                        <div class="w-[60px] h-[60px]">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <path
+                                        d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                                        stroke="#323232" stroke-width="2"></path>
+                                    <path d="M9 12H15" stroke="#323232" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round"></path>
+                                </g>
+                            </svg>
+                        </div>
+                        <span style="color: #647180"> &nbsp; Sterge o categorie</span>
+                    </button>
+                </div>
             </div>
-        </div>
         @endif
         @foreach ($categories as $category)
             <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8 collapse collapse-arrow">
-                
+
                 <input type="checkbox" />
                 <div class="collapse-title text-xl font-medium">
                     {{ $category->name }}
                 </div>
                 <div class="collapse-content">
-                    {{-- another 2 accordions, Videos and Documents --}}
                     <div class="collapse collapse-arrow">
                         <input type="checkbox" />
                         <div class="collapse-title text-lg font-medium">
                             Videos
                         </div>
                         <div class="collapse-content">
-                            <p>Content for Videos</p>
+                            <div class="swiper video-swiper-{{ $category->id }}">
+                                <div class="swiper-wrapper">
+                                    @foreach ($category->content->videos as $video)
+                                        <div class="swiper-slide">
+                                            <div class="video-card">
+                                                <div class="video-thumbnail h-[150px] w-[150px] object-cover">
+                                                    <img class='h-[150px] w-[150px] object-cover' src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="collapse collapse-arrow">
@@ -162,77 +183,85 @@
                             <p>Content for Documents</p>
                         </div>
                     </div>
+                </div>
             </div>
-    </div>
-    @endforeach
+        @endforeach
 
+
+    </div>
+    <div class="flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
+        <div
+            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
+                vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach ($materii as $materie)
+                    <li>
+                        {{ $materie->possibleAnswer->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <div
+            class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach ($nivel as $nv)
+                    <li>
+                        {{ $nv->possibleAnswer->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <div
+            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            <h3 class="text-2xl font-semibold text-gray-100">Stilul de
+                {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
+            <ul class="list-disc list-inside mt-4 text-gray-300">
+                @foreach ($stil_invatare as $si)
+                    <li>
+                        {{ $si->possibleAnswer->answer }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    <dialog id="category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="modal-box">
+            <h2 class="modal-title text-2xl mb-3">Adaugă o categorie</h2>
+            <hr class="my-3 border-t-1 border-gray-200 opacity-30">
+            <x-form wire:submit.prevent="addCategory">
+                <x-input label="Category" type="text" wire:model="newCategory" />
+                <x-slot:actions>
+                    <x-button onclick="category_modal.close()" label="Cancel" />
+                    <x-button label="Adauga" class="btn-primary" type="submit" spinner="login" />
+                </x-slot:actions>
+            </x-form>
+        </div>
+    </dialog>
+
+    <dialog id="delete_category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="modal-box">
+            <h2 class="modal-title text-2xl mb-3">Sterge o categorie</h2>
+            <hr class="my-3 border-t-1 border-gray-200 opacity-30">
+            <x-form wire:submit.prevent="deleteCategory">
+                <x-input label="Category" type="text" wire:model="categoryToDelete"
+                    placeholder="Scrie numele exact al categoriei" />
+                <x-slot:actions>
+                    <x-button onclick="delete_category_modal.close()" label="Cancel" />
+                    <x-button label="Sterge" class="btn-primary" type="submit" spinner="login" />
+                </x-slot:actions>
+            </x-form>
+        </div>
+    </dialog>
 
 </div>
-<div class="flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
-    <div
-        class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
-        <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
-            vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
-        <ul class="list-disc list-inside mt-4 text-gray-300">
-            @foreach ($materii as $materie)
-                <li>
-                    {{ $materie->possibleAnswer->answer }}
-                </li>
-            @endforeach
-        </ul>
-    </div>
-    <div class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
-        <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
-        <ul class="list-disc list-inside mt-4 text-gray-300">
-            @foreach ($nivel as $nv)
-                <li>
-                    {{ $nv->possibleAnswer->answer }}
-                </li>
-            @endforeach
-        </ul>
-    </div>
-    <div
-        class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
-        <h3 class="text-2xl font-semibold text-gray-100">Stilul de
-            {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
-        <ul class="list-disc list-inside mt-4 text-gray-300">
-            @foreach ($stil_invatare as $si)
-                <li>
-                    {{ $si->possibleAnswer->answer }}
-                </li>
-            @endforeach
-        </ul>
-    </div>
-</div>
-<dialog id="category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
-    <div class="modal-box">
-        <h2 class="modal-title text-2xl mb-3">Adaugă o categorie</h2>
-        <hr class="my-3 border-t-1 border-gray-200 opacity-30">
-        <x-form wire:submit.prevent="addCategory">
-            <x-input label="Category" type="text" wire:model="newCategory" />
-            <x-slot:actions>
-                <x-button onclick="category_modal.close()" label="Cancel" />
-                <x-button label="Adauga" class="btn-primary" type="submit" spinner="login" />
-            </x-slot:actions>
-        </x-form>
-    </div>
-</dialog>
 
-<dialog id="delete_category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
-    <div class="modal-box">
-        <h2 class="modal-title text-2xl mb-3">Sterge o categorie</h2>
-        <hr class="my-3 border-t-1 border-gray-200 opacity-30">
-        <x-form wire:submit.prevent="deleteCategory">
-            <x-input label="Category" type="text" wire:model="categoryToDelete" placeholder="Scrie numele exact al categoriei" />
-            <x-slot:actions>
-                <x-button onclick="delete_category_modal.close()" label="Cancel" />
-                <x-button label="Sterge" class="btn-primary" type="submit" spinner="login" />
-            </x-slot:actions>
-        </x-form>
-    </div>
-</dialog>
+@assets
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+@endassets
 
-</div>
 @script
     <script>
         $wire.on('triggerFileUpload', (event) => {
@@ -245,6 +274,32 @@
 
         $wire.on('closeDeleteCategoryModal', (event) => {
             document.getElementById('delete_category_modal').close();
+        });
+        document.addEventListener('livewire:initialized', function() {
+            const options = {
+                slidesPerView: 2,
+                spaceBetween: 16,
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2
+                    },
+                    768: {
+                        slidesPerView: 3
+                    },
+                    1024: {
+                        slidesPerView: 4
+                    },
+                }
+            };
+            document.querySelectorAll('[class*="video-swiper-"]').forEach(el => {
+                new Swiper(el, options);
+            });
+
+            // Select all elements with class starting with "doc-swiper-"
+            document.querySelectorAll('[class*="doc-swiper-"]').forEach(el => {
+                new Swiper(el, options);
+            });
+            console.log('Swipers initialized');
         });
     </script>
 @endscript

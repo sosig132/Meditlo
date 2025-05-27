@@ -34,6 +34,7 @@ class Profile extends Component
   public $newCategory;
   public $categories = [];
   public $categoryToDelete = null;
+  public $content = [];
   public function mount($id)
   {
     $answers_model = new Answer();
@@ -53,9 +54,25 @@ class Profile extends Component
     $this->nivel = $answers_model->getUserAnswersForQuestion($this->userId, 4);
     if ($id == auth()->user()->id) {
       $this->categories = $this->user->getOwnedCategories();
+      $this->content = User::getTutorContent($this->userId);
+      $this->categories->each(function ($category) {
+        $category->content->videos = $category->content()->where('user_id', $this->userId)->where('type', 'video')->get();
+        $category->content->videos->each(function ($video) {
+              $video->thumbnail_url = $video->getThumbnailUrlAttribute();
+          });
+        $category->content->documents = $category->content()->where('user_id', $this->userId)->where('type', 'document')->get();
+      });
     }
     else if (User::checkIfStudentIsInTutorList($this->userId, auth()->user()->id)) {
       $this->categories = User::getStudentCategoriesForTutor(auth()->user()->id, $this->userId);
+      $this->content = User::getStudentContentForTutor(auth()->user()->id, $this->userId, $this->categories);
+      $this->categories->each(function ($category) {
+          $category->content->videos = $category->content()->where('user_id', $this->userId)->where('type', 'video')->get();
+          $category->content->videos->each(function ($video) {
+              $video->thumbnail_url = $video->getThumbnailUrlAttribute();
+          });
+          $category->content->documents = $category->content()->where('user_id', $this->userId)->where('type', 'document')->get();
+      });
     }
   }
 

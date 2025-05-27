@@ -29,7 +29,16 @@ class Content extends Model
         if ($this->thumbnail) {
             return asset('storage/' . $this->thumbnail);
         }
-        return null;
+        if($this->source == 'youtube') {
+          
+            return 'https://img.youtube.com/vi/' . $this->getYoutubeIdFromUrl($this->uri) . '/hqdefault.jpg';
+        }
+    }
+    private function getYoutubeIdFromUrl($url)
+    {
+        $queryParams = [];
+        parse_str(parse_url($url, PHP_URL_QUERY), $queryParams);
+        return $queryParams['v'] ?? null;
     }
     public function getUriAttribute($value)
     {
@@ -53,23 +62,48 @@ class Content extends Model
     }
 
     public static function addVideo($data) {
-        // $this->title = $data['title'];
-        // $this->description = $data['description'];
-        // $this->type = 'video';
-        // $this->uri = $data['video_url'];
-        // $this->thumbnail = $data['thumbnail'] ? $data['thumbnail'] : null;
-        // $this->source = $data['source'];
-        // $this->user_id = $data['user_id'];
-        // $this->save();
-        // return $this;
-        return self::create([
-            'user_id' => $data['user_id'],
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'type' => 'video',
-            'uri' => $data['video_url'],
-            'thumbnail' => $data['thumbnail'] ? $data['thumbnail'] : null,
-            'source' => $data['source'],
-        ]);
+        $content = new self();
+        $content->user_id = $data['user_id'];
+        $content->title = $data['title'];
+        $content->description = $data['description'];
+        $content->type = 'video';
+        $content->uri = $data['video_url'];
+        $content->thumbnail = $data['thumbnail'] ? $data['thumbnail'] : null;
+        $content->source = $data['source'];
+        $content->save();
+        if (isset($data['selectedCategories']) && is_array($data['selectedCategories'])) {
+            $content->addCategories($data['selectedCategories']);
+        }
+        return $content;
     }
+
+    public static function addDocument($data) {
+        $content = new self();
+        $content->user_id = $data['user_id'];
+        $content->title = $data['title'];
+        $content->description = $data['description'];
+        $content->type = 'document';
+        $content->uri = $data['document_url'];
+        $content->source = 'local';
+        $content->save();
+        if (isset($data['selectedCategories']) && is_array($data['selectedCategories'])) {
+            $content->addCategories($data['selectedCategories']);
+        }
+        return $content;
+    }
+
+    public function updateContent($data)
+    {
+        $this->title = $data['title'];
+        $this->description = $data['description'];
+        $this->save();
+        
+        return $this;
+    }
+
+    public function getCategories()
+    {
+        return $this->categories()->get();
+    }
+
 }
