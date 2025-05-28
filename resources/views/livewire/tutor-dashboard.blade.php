@@ -257,7 +257,7 @@
                             <form method="dialog">
                                 <button class="btn">Cancel</button>
                             </form>
-                            <button wire:click="addVideo" class="btn btn-primary">Save</button>
+                            <button wire:click="addVideo" onclick="add_video_modal.close()" class="btn btn-primary">Save</button>
                         </div>
                     </div>
                 </div>
@@ -347,7 +347,7 @@
                             <form method="dialog">
                                 <button class="btn">Cancel</button>
                             </form>
-                            <button wire:click="addDocument" class="btn btn-primary">Save</button>
+                            <button wire:click="addDocument" onclick="add_document_modal.close()" class="btn btn-primary">Save</button>
                         </div>
                     </div>
                 </div>

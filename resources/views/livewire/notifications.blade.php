@@ -28,6 +28,8 @@
                 {{ $notificationCount }}
             </span>
         @endif
+        @if (!empty($notifications))
+        
         <ul x-show="show" x-transition @click.away="show = false"
             class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64">
             @foreach ($notifications as $notification)
@@ -45,6 +47,7 @@
                 </li>
             @endforeach
         </ul>
+        @endif
     </div>
     <dialog id="request_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
         <div class="modal-box flex flex-col">

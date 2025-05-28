@@ -34,6 +34,15 @@ class Content extends Model
             return 'https://img.youtube.com/vi/' . $this->getYoutubeIdFromUrl($this->uri) . '/hqdefault.jpg';
         }
     }
+
+    public function getVideoIdAttribute()
+    {
+        if ($this->source == 'youtube') {
+            return $this->getYoutubeIdFromUrl($this->uri);
+        }
+        return null;
+    }
+
     private function getYoutubeIdFromUrl($url)
     {
         $queryParams = [];
@@ -45,7 +54,7 @@ class Content extends Model
         if ($this->source == 'youtube') {
             return $value;
         } elseif ($this->source == 'cloud') {
-            return '';
+            return $value;
         } elseif ($this->source == 'local') {
             return asset($value);
         }

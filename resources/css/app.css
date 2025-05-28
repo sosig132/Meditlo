@@ -54,3 +54,16 @@
 #category_modal {
   z-index: 100 !important;
 }
+.swiper .swiper-button-prev::after, #slider-button-right::after, #slider-button-left::after,
+.swiper .swiper-rtl .swiper-button-next::after {
+  all: unset !important;
+}
+
+.plyr {
+  width:93%;
+}
+
+#video-wrapper {
+  width: 100% !important;
+  --padding: 0 !important;
+}

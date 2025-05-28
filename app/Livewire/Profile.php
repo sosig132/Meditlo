@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Answer;
 use App\Models\Categories;
+use App\Models\Content;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\User;
@@ -35,6 +36,7 @@ class Profile extends Component
   public $categories = [];
   public $categoryToDelete = null;
   public $content = [];
+  public $selectedVideo = null;
   public function mount($id)
   {
     $answers_model = new Answer();
@@ -56,27 +58,92 @@ class Profile extends Component
       $this->categories = $this->user->getOwnedCategories();
       $this->content = User::getTutorContent($this->userId);
       $this->categories->each(function ($category) {
-        $category->content->videos = $category->content()->where('user_id', $this->userId)->where('type', 'video')->get();
-        $category->content->videos->each(function ($video) {
-              $video->thumbnail_url = $video->getThumbnailUrlAttribute();
-          });
-        $category->content->documents = $category->content()->where('user_id', $this->userId)->where('type', 'document')->get();
+        // Assign videos and documents directly to the $category object
+        $category->videos = $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'video')
+          ->get();
+
+        $category->videos->each(function ($video) {
+          $video->thumbnail_url = $video->getThumbnailUrlAttribute();
+          if ($video->source == 'youtube') {
+            $video->yt_id = $video->getVideoIdAttribute();
+          }
+        });
+
+        $category->documents = $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'document')
+          ->get();
+
+        $category->documents->each(function ($document) {
+          $document->file_type = pathinfo($document->uri, PATHINFO_EXTENSION);
+        });
       });
-    }
-    else if (User::checkIfStudentIsInTutorList($this->userId, auth()->user()->id)) {
+    } else if (User::checkIfStudentIsInTutorList($this->userId, auth()->user()->id)) {
       $this->categories = User::getStudentCategoriesForTutor(auth()->user()->id, $this->userId);
       $this->content = User::getStudentContentForTutor(auth()->user()->id, $this->userId, $this->categories);
       $this->categories->each(function ($category) {
-          $category->content->videos = $category->content()->where('user_id', $this->userId)->where('type', 'video')->get();
-          $category->content->videos->each(function ($video) {
-              $video->thumbnail_url = $video->getThumbnailUrlAttribute();
-          });
-          $category->content->documents = $category->content()->where('user_id', $this->userId)->where('type', 'document')->get();
+        // Assign videos and documents directly to the $category object
+        $category->videos = $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'video')
+          ->get();
+
+        $category->videos->each(function ($video) {
+          $video->thumbnail_url = $video->getThumbnailUrlAttribute();
+          if ($video->source == 'youtube') {
+            $video->yt_id = $video->getVideoIdAttribute();
+          }
+        });
+
+        $category->documents = $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'document')
+          ->get();
+
+        $category->documents->each(function ($document) {
+          $document->file_type = pathinfo($document->uri, PATHINFO_EXTENSION);
+        });
       });
     }
+    $this->categories = $this->categories->map(function ($category) {
+      return [
+        'id' => $category->id,
+        'name' => $category->name,
+        'videos' => $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'video')
+          ->get()
+          ->map(function ($video) {
+            return [
+              'id' => $video->id,
+              'title' => $video->title,
+              'thumbnail_url' => $video->getThumbnailUrlAttribute(),
+              'yt_id' => $video->source === 'youtube' ? $video->getVideoIdAttribute() : null,
+            ];
+          })
+          ->toArray(),
+        'documents' => $category->content()
+          ->where('user_id', $this->userId)
+          ->where('type', 'document')
+          ->get()
+          ->map(function ($document) {
+            return [
+              'id' => $document->id,
+              'title' => $document->title,
+              'uri' => $document->uri,
+              'file_type' => pathinfo($document->uri, PATHINFO_EXTENSION),
+            ];
+          })
+          ->toArray(),
+      ];
+    })->toArray();
+
   }
 
-  public function hydrate() {
+  public function hydrate()
+  {
     $this->user = User::with('profile')->find($this->userId);
     if (!$this->user) {
       abort(404);
@@ -274,6 +341,23 @@ class Profile extends Component
         ]);
       }
     }
+  }
+
+  public function selectVideo($contentId)
+  {
+    $this->selectedVideo = Content::find($contentId);
+    if ($this->selectedVideo->source == 'youtube') {
+      $this->selectedVideo->yt_id = $this->selectedVideo->getVideoIdAttribute();
+    }
+    $this->dispatch('openVideoModal', [
+      'video' => $this->selectedVideo,
+    ]);
+  }
+
+  public function unselectVideo()
+  {
+    $this->selectedVideo = null;
+    $this->dispatch('closeVideoModal');
   }
 
   public function render()

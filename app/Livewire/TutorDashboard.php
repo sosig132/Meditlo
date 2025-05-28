@@ -238,7 +238,7 @@ class TutorDashboard extends Component
       }
 
       $this->alert('success', 'Video uploaded successfully. It will be available shortly, depending on the size of the video.');
-      return ['url' => 'https://iframe.mediadelivery.net/play/' . env('BUNNY_VIDEO_LIBRARY_ID') . '/' . $videoId, 'source' => 'cloud'];
+      return ['url' => 'https://iframe.mediadelivery.net/embed/' . env('BUNNY_VIDEO_LIBRARY_ID') . '/' . $videoId, 'source' => 'cloud'];
     } catch (\Exception $e) {
       $filePath = $file->store('videos', 'public');
       \Log::error('Video upload failed: ' . $e->getMessage());

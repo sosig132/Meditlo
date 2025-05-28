@@ -1,8 +1,8 @@
 <div
-    class="flex flex-col profile:flex-row items-start justify-center md:space-y-4 profile:space-y-0 profile:space-x-4 sm:justify-center">
+    class="flex flex-col profile:flex-row items-start justify-center md:space-y-4 profile:space-y-0 profile:space-x-4 sm:justify-center px-4">
     <div class="flex flex-col max-w-4xl w-full">
         <div
-            class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 max-w-4xl w-full profile:mx-8 profile:mt-4 flex-1">
+            class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 max-w-4xl w-full profile:px-8 profile:mt-4 flex-1">
             <div class="flex flex-col profile:flex-row items-center space-y-4 profile:space-y-0 profile:space-x-8">
                 <div class="relative group">
                     <img src="{{ $photo ? asset('storage/' . $photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
@@ -101,8 +101,45 @@
                 @endif
             </div>
         </div>
+        <div class="flex lg:hidden w-full profile:[width:unset] md:flex-row flex-col">
+            <div
+                class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
+                <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
+                    vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
+                <ul class="list-disc list-inside mt-4 text-gray-300">
+                    @foreach ($materii as $materie)
+                        <li>
+                            {{ $materie->possibleAnswer->answer }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            <div
+                class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
+                <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
+                <ul class="list-disc list-inside mt-4 text-gray-300">
+                    @foreach ($nivel as $nv)
+                        <li>
+                            {{ $nv->possibleAnswer->answer }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            <div
+                class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
+                <h3 class="text-2xl font-semibold text-gray-100">Stilul de
+                    {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
+                <ul class="list-disc list-inside mt-4 text-gray-300">
+                    @foreach ($stil_invatare as $si)
+                        <li>
+                            {{ $si->possibleAnswer->answer }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
         @if (Auth::id() == $userId && Auth::user()->role == 'tutor')
-            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
+            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
                 <div class="flex justify-center profile:justify-start">
                     <button
                         class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
@@ -122,7 +159,7 @@
                     </button>
                 </div>
             </div>
-            <div class="mt-8 bg-red-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8">
+            <div class="mt-8 bg-red-800 rounded-lg shadow-lg w-full max-w-4xl">
                 <div class="flex justify-center profile:justify-start">
                     <button
                         class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
@@ -146,30 +183,59 @@
             </div>
         @endif
         @foreach ($categories as $category)
-            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:mx-8 collapse collapse-arrow">
+            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl profile:px-8 collapse collapse-arrow">
 
                 <input type="checkbox" />
                 <div class="collapse-title text-xl font-medium">
-                    {{ $category->name }}
+                    {{ $category['name'] }}
                 </div>
-                <div class="collapse-content">
+                <div class="collapse-content" wire:ignore.self>
                     <div class="collapse collapse-arrow">
                         <input type="checkbox" />
                         <div class="collapse-title text-lg font-medium">
                             Videos
                         </div>
-                        <div class="collapse-content">
-                            <div class="swiper video-swiper-{{ $category->id }}">
+                        <div class="collapse-content w-full max-w-full max-h-[100vh] min-h-[0] min-w-[0]">
+                            <div class="swiper video-swiper-{{ $category['id'] }}">
                                 <div class="swiper-wrapper">
-                                    @foreach ($category->content->videos as $video)
+                                    @foreach ($category['videos'] as $video)
                                         <div class="swiper-slide">
-                                            <div class="video-card">
+                                            <div class="video-card w-fit p-3 rounded btn-ghost cursor-pointer transition duration-300"
+                                                id="{{ $video['id'] }}"
+                                                wire:click="selectVideo('{{ $video['id'] }}')">
                                                 <div class="video-thumbnail h-[150px] w-[150px] object-cover">
-                                                    <img class='h-[150px] w-[150px] object-cover' src="{{ $video->thumbnail_url }}" alt="{{ $video->title }}">
+                                                    <img class='h-[150px] w-[150px] object-cover'
+                                                        src="{{ $video['thumbnail_url'] }}"
+                                                        alt="{{ $video['title'] }}">
+                                                </div>
+                                                <div class="w-[150px] text-center text-gray-100 mt-2 line-clamp-3">
+                                                    {{ $video['title'] }}
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
+                                </div>
+                                <div class="flex items-center gap-8 lg:justify-start justify-center">
+                                    <button id="slider-button-left"
+                                        class="swiper-button-prev group !p-2 flex justify-center items-center border border-solid border-black/50 bg-black/70 !w-12 !h-12 transition-all duration-500 rounded-full !top-3/4 !-translate-y-8"
+                                        data-carousel-prev>
+                                        <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M10.0002 11.9999L6 7.99971L10.0025 3.99719" stroke="currentColor"
+                                                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+
+                                    <button id="slider-button-right"
+                                        class="swiper-button-next group !p-2 flex justify-center items-center border border-solid border-black/50 bg-black/70 !w-12 !h-12 transition-all duration-500 rounded-full !top-3/4 !-translate-y-8"
+                                        data-carousel-next>
+                                        <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M5.99984 4.00012L10 8.00029L5.99748 12.0028" stroke="currentColor"
+                                                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+
                                 </div>
                             </div>
                         </div>
@@ -179,8 +245,51 @@
                         <div class="collapse-title text-lg font-medium">
                             Documents
                         </div>
-                        <div class="collapse-content">
-                            <p>Content for Documents</p>
+                        <div class="collapse-content w-full max-w-full max-h-[100vh] min-h-[0] min-w-[0]">
+                            <div class="swiper doc-swiper-{{ $category['id'] }}">
+                                <div class="swiper-wrapper">
+                                    @foreach ($category['documents'] as $document)
+                                        <div class="swiper-slide">
+                                            <a class="document-card w-fit p-3 rounded btn-ghost cursor-pointer transition duration-300"
+                                                id="{{ $document['id'] }}"
+                                                href="{{ $document['uri'] }}" download>
+                                                <div class="document-thumbnail h-[150px] w-[150px] object-cover">
+                                                    @if ($document['file_type'] === 'pdf')
+                                                        <svg viewBox="-4 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M25.6686 26.0962C25.1812 26.2401 24.4656 26.2563 23.6984 26.145C22.875 26.0256 22.0351 25.7739 21.2096 25.403C22.6817 25.1888 23.8237 25.2548 24.8005 25.6009C25.0319 25.6829 25.412 25.9021 25.6686 26.0962ZM17.4552 24.7459C17.3953 24.7622 17.3363 24.7776 17.2776 24.7939C16.8815 24.9017 16.4961 25.0069 16.1247 25.1005L15.6239 25.2275C14.6165 25.4824 13.5865 25.7428 12.5692 26.0529C12.9558 25.1206 13.315 24.178 13.6667 23.2564C13.9271 22.5742 14.193 21.8773 14.468 21.1894C14.6075 21.4198 14.7531 21.6503 14.9046 21.8814C15.5948 22.9326 16.4624 23.9045 17.4552 24.7459ZM14.8927 14.2326C14.958 15.383 14.7098 16.4897 14.3457 17.5514C13.8972 16.2386 13.6882 14.7889 14.2489 13.6185C14.3927 13.3185 14.5105 13.1581 14.5869 13.0744C14.7049 13.2566 14.8601 13.6642 14.8927 14.2326ZM9.63347 28.8054C9.38148 29.2562 9.12426 29.6782 8.86063 30.0767C8.22442 31.0355 7.18393 32.0621 6.64941 32.0621C6.59681 32.0621 6.53316 32.0536 6.44015 31.9554C6.38028 31.8926 6.37069 31.8476 6.37359 31.7862C6.39161 31.4337 6.85867 30.8059 7.53527 30.2238C8.14939 29.6957 8.84352 29.2262 9.63347 28.8054ZM27.3706 26.1461C27.2889 24.9719 25.3123 24.2186 25.2928 24.2116C24.5287 23.9407 23.6986 23.8091 22.7552 23.8091C21.7453 23.8091 20.6565 23.9552 19.2582 24.2819C18.014 23.3999 16.9392 22.2957 16.1362 21.0733C15.7816 20.5332 15.4628 19.9941 15.1849 19.4675C15.8633 17.8454 16.4742 16.1013 16.3632 14.1479C16.2737 12.5816 15.5674 11.5295 14.6069 11.5295C13.948 11.5295 13.3807 12.0175 12.9194 12.9813C12.0965 14.6987 12.3128 16.8962 13.562 19.5184C13.1121 20.5751 12.6941 21.6706 12.2895 22.7311C11.7861 24.0498 11.2674 25.4103 10.6828 26.7045C9.04334 27.3532 7.69648 28.1399 6.57402 29.1057C5.8387 29.7373 4.95223 30.7028 4.90163 31.7107C4.87693 32.1854 5.03969 32.6207 5.37044 32.9695C5.72183 33.3398 6.16329 33.5348 6.6487 33.5354C8.25189 33.5354 9.79489 31.3327 10.0876 30.8909C10.6767 30.0029 11.2281 29.0124 11.7684 27.8699C13.1292 27.3781 14.5794 27.011 15.985 26.6562L16.4884 26.5283C16.8668 26.4321 17.2601 26.3257 17.6635 26.2153C18.0904 26.0999 18.5296 25.9802 18.976 25.8665C20.4193 26.7844 21.9714 27.3831 23.4851 27.6028C24.7601 27.7883 25.8924 27.6807 26.6589 27.2811C27.3486 26.9219 27.3866 26.3676 27.3706 26.1461ZM30.4755 36.2428C30.4755 38.3932 28.5802 38.5258 28.1978 38.5301H3.74486C1.60224 38.5301 1.47322 36.6218 1.46913 36.2428L1.46884 3.75642C1.46884 1.6039 3.36763 1.4734 3.74457 1.46908H20.263L20.2718 1.4778V7.92396C20.2718 9.21763 21.0539 11.6669 24.0158 11.6669H30.4203L30.4753 11.7218L30.4755 36.2428ZM28.9572 10.1976H24.0169C21.8749 10.1976 21.7453 8.29969 21.7424 7.92417V2.95307L28.9572 10.1976ZM31.9447 36.2428V11.1157L21.7424 0.871022V0.823357H21.6936L20.8742 0H3.74491C2.44954 0 0 0.785336 0 3.75711V36.2435C0 37.5427 0.782956 40 3.74491 40H28.2001C29.4952 39.9997 31.9447 39.2143 31.9447 36.2428Z" fill="#EB5757"></path> </g></svg>
+                                                    @else
+                                                        <svg fill="#1857B8" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 470.586 470.586" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M327.081,0H90.234c-15.9,0-28.854,12.959-28.854,28.859v412.863c0,15.924,12.953,28.863,28.854,28.863H380.35 c15.917,0,28.855-12.939,28.855-28.863V89.234L327.081,0z M333.891,43.184l35.996,39.121h-35.996V43.184z M384.972,441.723 c0,2.542-2.081,4.629-4.634,4.629H90.234c-2.551,0-4.62-2.087-4.62-4.629V28.859c0-2.548,2.069-4.613,4.62-4.613h219.41v70.181 c0,6.682,5.444,12.099,12.129,12.099h63.198V441.723z M131.858,161.048l-25.29-99.674h18.371l11.688,49.795 c1.646,6.954,3.23,14.005,4.592,20.516c1.555-6.682,3.425-13.774,5.272-20.723l13.122-49.583h16.863l11.969,49.929 c1.552,6.517,3.094,13.243,4.395,19.742c1.339-5.784,2.823-11.718,4.348-17.83l0.562-2.217l12.989-49.618h17.996l-28.248,99.673 h-16.834l-12.395-51.173c-1.531-6.289-2.87-12.052-3.975-17.693c-1.292,5.618-2.799,11.366-4.643,17.794l-13.964,51.072h-16.819 V161.048z M242.607,139.863h108.448c5.013,0,9.079,4.069,9.079,9.079c0,5.012-4.066,9.079-9.079,9.079H242.607 c-5.012,0-9.079-4.067-9.079-9.079C233.529,143.933,237.596,139.863,242.607,139.863z M360.135,209.566 c0,5.012-4.066,9.079-9.079,9.079H125.338c-5.012,0-9.079-4.067-9.079-9.079c0-5.013,4.066-9.079,9.079-9.079h225.718 C356.068,200.487,360.135,204.554,360.135,209.566z M360.135,263.283c0,5.012-4.066,9.079-9.079,9.079H125.338 c-5.012,0-9.079-4.067-9.079-9.079c0-5.013,4.066-9.079,9.079-9.079h225.718C356.068,254.204,360.135,258.271,360.135,263.283z M360.135,317c0,5.013-4.066,9.079-9.079,9.079H125.338c-5.012,0-9.079-4.066-9.079-9.079c0-5.012,4.066-9.079,9.079-9.079h225.718 C356.068,307.921,360.135,311.988,360.135,317z M360.135,371.474c0,5.013-4.066,9.079-9.079,9.079H125.338 c-5.012,0-9.079-4.066-9.079-9.079s4.066-9.079,9.079-9.079h225.718C356.068,362.395,360.135,366.461,360.135,371.474z"></path> </g> </g></svg>
+                                                    @endif
+                                                </div>
+                                                <div class="w-[150px] text-center text-gray-100 mt-2 line-clamp-3">
+                                                    {{ $document['title'] }}
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center gap-8 lg:justify-start justify-center">
+                                    <button id="slider-button-left"
+                                        class="swiper-button-prev group !p-2 flex justify-center items-center border border-solid border-black/50 bg-black/70 !w-12 !h-12 transition-all duration-500 rounded-full !top-3/4 !-translate-y-8"
+                                        data-carousel-prev>
+                                        <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M10.0002 11.9999L6 7.99971L10.0025 3.99719" stroke="currentColor"
+                                                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+
+                                    <button id="slider-button-right"
+                                        class="swiper-button-next group !p-2 flex justify-center items-center border border-solid border-black/50 bg-black/70 !w-12 !h-12 transition-all duration-500 rounded-full !top-3/4 !-translate-y-8"
+                                        data-carousel-next>
+                                        <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M5.99984 4.00012L10 8.00029L5.99748 12.0028" stroke="currentColor"
+                                                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </button>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -189,9 +298,9 @@
 
 
     </div>
-    <div class="flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
+    <div class="hidden lg:flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
         <div
-            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
             <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
                 vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
@@ -203,7 +312,7 @@
             </ul>
         </div>
         <div
-            class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
             <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
                 @foreach ($nivel as $nv)
@@ -214,7 +323,7 @@
             </ul>
         </div>
         <div
-            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:mx-8 flex-1 md:mt-0 profile:mt-4">
+            class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
             <h3 class="text-2xl font-semibold text-gray-100">Stilul de
                 {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
@@ -254,12 +363,42 @@
             </x-form>
         </div>
     </dialog>
-
+    <dialog id="video_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="w-full h-full max-w-3xl max-h-2xl content-center">
+            <div class="relative flex flex-col items-center w-full">
+                <button wire:click="unselectVideo()" class="absolute top-0 right-0 text-white text-xl"
+                    style="top: -40px; right: 17px; font-size: 30px;">&times;</button>
+                @if ($selectedVideo)
+                    @if ($selectedVideo->source == 'youtube')
+                        <div id="player" class="w-full plyr__video-embed" data-plyr-provider="youtube"
+                            data-plyr-embed-id="{{ $selectedVideo->yt_id }}"></div>
+                    @elseif ($selectedVideo->source == 'local')
+                        <video id="player" class="plyr" controls>
+                            <source src="{{ $selectedVideo->uri }}" type="video/mp4" />
+                        </video>
+                    @else
+                        <div style="aspect-ratio: 16 / 9; width: 100%; max-width: 1200px; margin: 0 auto;">
+                            {{-- <iframe src="{{ $selectedVideo->uri }}?autoplay=true&muted=false" loading="lazy"
+                                style="width: 100%; height: 100%; border: 0;"
+                                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                                allowfullscreen>
+                            </iframe> --}}
+                            <iframe src="{{ $selectedVideo->uri }}" loading="lazy"
+                                style="border: none; width:100%; height:100%;" allowfullscreen="true"
+                                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"></iframe>
+                        </div>
+                    @endif
+                @endif
+            </div>
+        </div>
+    </dialog>
 </div>
 
 @assets
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 @endassets
 
 @script
@@ -276,12 +415,15 @@
             document.getElementById('delete_category_modal').close();
         });
         document.addEventListener('livewire:initialized', function() {
+            swiper();
+        });
+
+        function swiper() {
             const options = {
                 slidesPerView: 2,
-                spaceBetween: 16,
                 breakpoints: {
                     640: {
-                        slidesPerView: 2
+                        slidesPerView: 3
                     },
                     768: {
                         slidesPerView: 3
@@ -289,17 +431,45 @@
                     1024: {
                         slidesPerView: 4
                     },
-                }
+                },
+                scrollbar: {
+                    el: '.swiper-scrollbar',
+
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
             };
             document.querySelectorAll('[class*="video-swiper-"]').forEach(el => {
                 new Swiper(el, options);
             });
 
-            // Select all elements with class starting with "doc-swiper-"
             document.querySelectorAll('[class*="doc-swiper-"]').forEach(el => {
                 new Swiper(el, options);
             });
-            console.log('Swipers initialized');
+            console.log('Swiper initialized');
+        }
+        document.addEventListener('openVideoModal', function(event) {
+            const videoModal = document.getElementById('video_modal');
+            videoModal.showModal();
+            setTimeout(() => {
+                new Plyr('#player');
+                swiper();
+            }, 200);
+        });
+
+        document.addEventListener('closeVideoModal', function(event) {
+            const videoModal = document.getElementById('video_modal');
+            videoModal.close();
+            const player = document.getElementById('player');
+            if (player) {
+                player.pause();
+                player.src = '';
+            }
+            setTimeout(() => {
+                swiper();
+            }, 200);
         });
     </script>
 @endscript
