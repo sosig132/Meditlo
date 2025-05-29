@@ -365,9 +365,12 @@
     </dialog>
     <dialog id="video_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
         <div class="w-full h-full max-w-3xl max-h-2xl content-center">
-            <div class="relative flex flex-col items-center w-full">
-                <button wire:click="unselectVideo()" class="absolute top-0 right-0 text-white text-xl"
-                    style="top: -40px; right: 17px; font-size: 30px;">&times;</button>
+            <div class="relative flex flex-col items-center w-full p-3 rounded" style="background: #1d232a;">
+                <button wire:click="unselectVideo()"
+    class="absolute top-0 right-0 text-white"
+    style="top: -20px; z-index: 999; border: 1px solid; background: black; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+    <svg fill="#FFFFFF" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 460.775 460.775" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55 c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55 c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505 c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55 l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719 c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"></path> </g></svg>
+</button>
                 @if ($selectedVideo)
                     @if ($selectedVideo->source == 'youtube')
                         <div id="player" class="w-full plyr__video-embed" data-plyr-provider="youtube"
@@ -377,7 +380,7 @@
                             <source src="{{ $selectedVideo->uri }}" type="video/mp4" />
                         </video>
                     @else
-                        <div style="aspect-ratio: 16 / 9; width: 100%; max-width: 1200px; margin: 0 auto;">
+                        <div style="aspect-ratio: 16 / 9; width: 100%; max-width: 48rem; margin: 0 auto;">
                             {{-- <iframe src="{{ $selectedVideo->uri }}?autoplay=true&muted=false" loading="lazy"
                                 style="width: 100%; height: 100%; border: 0;"
                                 allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
@@ -388,6 +391,9 @@
                                 allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"></iframe>
                         </div>
                     @endif
+                    <div class="ml-5 w-full">
+                        <p class="text-gray-300 p-5">{{ $selectedVideo->description }}</p>
+                    </div>
                 @endif
             </div>
         </div>

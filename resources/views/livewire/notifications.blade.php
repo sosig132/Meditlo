@@ -28,26 +28,32 @@
                 {{ $notificationCount }}
             </span>
         @endif
-        @if (!empty($notifications))
-        
+
         <ul x-show="show" x-transition @click.away="show = false"
             class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64">
-            @foreach ($notifications as $notification)
-                <li class="notification flex flex-row gap-1"
-                    {{ $notification['type'] === 'match_request' ? "wire:click=openRequestModal('{$notification['id']}')" : '' }}
-                    role="button" tabindex="0">
+            @if (!empty($notifications))
+                @foreach ($notifications as $notification)
+                    <li class="notification flex flex-row gap-1"
+                        {{ $notification['type'] === 'match_request' ? "wire:click=openRequestModal('{$notification['id']}')" : '' }}
+                        role="button" tabindex="0">
 
-                    @if ($notification['type'] == 'match_request')
-                        <p class="inline" data-type="{{ $notification['type'] }}"
-                            data-id="{{ $notification['id'] }}">{!! str_replace('<a', '<a class="underline font-bold" onclick="event.stopPropagation()"', $notification['message']) !!}</p>
-                    @else
-                        {{ $notification['message'] }}
-                    @endif
+                        @if ($notification['type'] == 'match_request')
+                            <p class="inline" data-type="{{ $notification['type'] }}"
+                                data-id="{{ $notification['id'] }}">{!! str_replace(
+                                    '<a',
+                                    '<a class="underline font-bold" onclick="event.stopPropagation()"',
+                                    $notification['message'],
+                                ) !!}</p>
+                        @else
+                            {{ $notification['message'] }}
+                        @endif
 
-                </li>
-            @endforeach
+                    </li>
+                @endforeach
+            @else
+                <p class="p-3 inline">No new notifications</p>
+            @endif
         </ul>
-        @endif
     </div>
     <dialog id="request_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
         <div class="modal-box flex flex-col">

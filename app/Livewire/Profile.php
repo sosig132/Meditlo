@@ -58,7 +58,6 @@ class Profile extends Component
       $this->categories = $this->user->getOwnedCategories();
       $this->content = User::getTutorContent($this->userId);
       $this->categories->each(function ($category) {
-        // Assign videos and documents directly to the $category object
         $category->videos = $category->content()
           ->where('user_id', $this->userId)
           ->where('type', 'video')
@@ -84,7 +83,6 @@ class Profile extends Component
       $this->categories = User::getStudentCategoriesForTutor(auth()->user()->id, $this->userId);
       $this->content = User::getStudentContentForTutor(auth()->user()->id, $this->userId, $this->categories);
       $this->categories->each(function ($category) {
-        // Assign videos and documents directly to the $category object
         $category->videos = $category->content()
           ->where('user_id', $this->userId)
           ->where('type', 'video')
@@ -106,6 +104,9 @@ class Profile extends Component
           $document->file_type = pathinfo($document->uri, PATHINFO_EXTENSION);
         });
       });
+    }
+    if (!$this->categories) {
+      $this->categories = collect([]);
     }
     $this->categories = $this->categories->map(function ($category) {
       return [

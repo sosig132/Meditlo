@@ -16,6 +16,7 @@ class Messages extends Component
   public $messageText = '';
   public $conversationId = null;
   public $selectedChatter = null;
+  public $selectedChatterName = '';
   protected $listeners = ['messageReceived'];
   public $conversationsCreated = false;
   public function mount()
@@ -66,6 +67,7 @@ class Messages extends Component
   {
     $user = Auth::user();
     $this->selectedChatter = $chatterId;
+    $this->selectedChatterName = collect($this->chatters)->firstWhere('id', $chatterId)['name'];
     $this->conversationId = $this->getConversationId($chatterId);
     Conversation::markMessagesAsRead($this->conversationId);
     $this->messages = Conversation::find($this->conversationId)->getMessages($this->conversationId);
