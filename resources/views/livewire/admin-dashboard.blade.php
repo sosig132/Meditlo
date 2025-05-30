@@ -1,4 +1,4 @@
-<div>
+<div class="p-5">
     <h1 class="text-center text-3xl">Admin Dashboard</h1>
     <hr class="my-4">
     <h2 class="text-2xl mb-4">Answers to profile creation questions</h2>
@@ -9,22 +9,25 @@
                     @switch($questionNumber)
                         @case(1)
                             (Ce fel de cont?)
-                            @break
+                        @break
+
                         @case(2)
                             (Ce materii cauti?)
-                            @break
+                        @break
+
                         @case(3)
                             (Ce stil de invatare crezi ca ti se potriveste?)
-                            @break
+                        @break
+
                         @case(4)
                             (Ce nivel de invatamant te intereseaza?)
-                            @break
+                        @break
                     @endswitch
                 </h1>
 
-                @foreach ($possibleAnswers->get($questionNumber) as $answer)
+                @foreach ($possibleAnswers[$questionNumber] as $answer)
                     <div>
-                        <p>{{ $answer->answer }}</p>
+                        <p>{{ $answer['answer'] }}</p>
                     </div>
                 @endforeach
 
@@ -37,4 +40,32 @@
             </div>
         @endforeach
     </div>
+    <hr class="my-4">
+    <h2 class="text-2xl mb-4">Users</h2>
+
+    <div class="flex flex-col mx-10">
+        @foreach ($users as $user)
+            <div class="mb-4 p-4 border rounded-lg flex flex-row justify-between items-center">
+                <div>
+                    <a href="/profile/{{ $user->id }}">
+                        <h3 class="text-xl font-semibold">{{ $user->name }}</h3>
+                    </a>
+                    <p>Email: {{ $user->email }}</p>
+                </div>
+                <button class="btn bg-red-800 mt-2 color-white" onclick="delete_user_modal.showModal()" wire:click="selectUser({{$user->id}})">Delete
+                    user</button>
+            </div>
+        @endforeach
+    </div>
+
+    <dialog id="delete_user_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="modal-box">
+            <h3 class="font-bold text-lg">Delete User</h3>
+            <p class="py-4">Are you sure you want to delete this user?</p>
+            <div class="w-full flex justify-end gap-2">
+              <x-button label="Cancel" onclick="delete_user_modal.close()" />
+              <x-button label="Delete" class="btn bg-red-800 color-white" wire:click="deleteUser({{$selectedUser}})" onclick="delete_user_modal.close()" />
+            </div>
+        </div>
+    </dialog>
 </div>

@@ -10,47 +10,74 @@ use App\Models\PossibleAnswer;
 
 class AdminDashboard extends Component
 {
-    public $answers = [];
-    private $possibleAnswers;
+  public $answers = [];
+  public $possibleAnswers;
+  public $users = [];
+  public $selectedUser = null;
 
-    public function mount()
-    {
-        if (!$this->isAdmin()) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        foreach (range(1, 4) as $questionNumber) {
-            $this->answers[$questionNumber] = '';
-        }
-        $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber();
+  public function mount()
+  {
+    if (!$this->isAdmin()) {
+      abort(403, 'Unauthorized action.');
     }
 
-    public function getPossibleAnswers()
-    {
-        return $this->possibleAnswers;
+    foreach (range(1, 4) as $questionNumber) {
+      $this->answers[$questionNumber] = '';
+    }
+    $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber()->map(function ($group) {
+      return $group->toArray();
+    })->toArray();
+    
+
+    $this->users = User::getNonAdminUsers();
+  }
+
+  public function getPossibleAnswers()
+  {
+    return $this->possibleAnswers;
+  }
+
+  public function selectUser($userId)
+  {
+    $this->selectedUser = $userId;
+  }
+
+  public function deleteUser($userId)
+  {
+    if (!$this->isAdmin()) {
+      abort(403, 'Unauthorized action.');
     }
 
-    private function isAdmin(): bool
-    {
-        return User::find(Auth::id())->isAdmin();
+    $user = User::find($userId);
+    if ($user) {
+      $user->deleteUser();
+      $this->users = User::getNonAdminUsers();
+      session()->flash('message', 'User deleted successfully.');
+    } else {
+      session()->flash('error', 'User not found.');
     }
+  }
 
-    public function addAnswer($questionNumber)
-    {
-        $this->validate([
-            "answers.$questionNumber" => 'required|string',
-        ]);
+  private function isAdmin(): bool
+  {
+    return User::find(Auth::id())->isAdmin();
+  }
 
-        PossibleAnswer::addPossibleAnswer($this->answers[$questionNumber], $questionNumber);
-        $this->answers[$questionNumber] = '';
-        $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber();
-    }
+  public function addAnswer($questionNumber)
+  {
+    $this->validate([
+      "answers.$questionNumber" => 'required|string',
+    ]);
 
-    public function render()
-    {
-        return view('livewire.admin-dashboard', [
-            'questions' => range(1, 4),
-            'possibleAnswers' => $this->getPossibleAnswers(),
-        ]);
-    }
+    PossibleAnswer::addPossibleAnswer($this->answers[$questionNumber], $questionNumber);
+    $this->answers[$questionNumber] = '';
+    $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber();
+  }
+
+  public function render()
+  {
+    return view('livewire.admin-dashboard', [
+      'questions' => range(1, 4),
+    ]);
+  }
 }

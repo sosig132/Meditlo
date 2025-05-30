@@ -32,7 +32,10 @@ class Messages extends Component
     }
     
     $this->createConversationsForUser();
-    $this->chatters = $this->chatters->map(fn($chatter) => [
+    if (!$this->chatters) {
+      $this->chatters = collect();
+    }
+    $this->chatters = $this->chatters->map(callback: fn($chatter) => [
       'id' => $chatter->id,
       'name' => $chatter->name,
       'profile_picture' => $chatter->profile->profile_picture,

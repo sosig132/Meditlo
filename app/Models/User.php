@@ -321,6 +321,11 @@ class User extends Authenticatable
     return $student->categories()->get();
   }
 
+  public static function getNonAdminUsers()
+  {
+    return self::where('role', '!=', 'admin')->get();
+  }
+
   public static function assignCategoriesToStudent($categories, $studentId)
   {
     $student = self::find($studentId);
@@ -418,5 +423,9 @@ class User extends Authenticatable
       ];
     }
     return $content;
+  }
+
+  public function deleteUser() {
+    $this->delete();
   }
 }
