@@ -20,7 +20,12 @@
                     @endif
                 </div>
                 <div class="text-center profile:text-left">
-                    <h2 class="text-3xl font-semibold text-gray-100">{{ $user->name }}</h2>
+                    <div class="flex items-center justify-center profile:justify-start gap-2">
+                      <h2 class="text-3xl font-semibold text-gray-100">{{ $user->name }}</h2>
+                      @if (Auth::id () != $user->id && Auth::user()->role == 'student')
+                        <livewire:tutor-rating-form :tutorId="$user->id" />
+                      @endif
+                    </div>
                     <p class="text-gray-300 mt-2">{{ ucfirst($user->role) }}</p>
                     <div class="mt-6">
                         <p class="text-gray-300 flex items-center">

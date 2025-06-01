@@ -16,7 +16,7 @@
                         @break
 
                         @case(3)
-                            (Ce stil de invatare crezi ca ti se potriveste?)
+                            (Ce stil de invatare/predare crezi ca ti se potriveste?)
                         @break
 
                         @case(4)

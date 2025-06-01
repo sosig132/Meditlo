@@ -114,6 +114,8 @@ class Home extends Component
         $this->dispatch('matchRequestSent',  $userId);
     }
 
+    //TODO: make sorts. for relevance, the rating portion should be calculated using Bayesian average, maybe with an exponential decay factor, or if time doesn't allow, just use recent rating weighting
+
     public function render()
     {
         return view('livewire.home');

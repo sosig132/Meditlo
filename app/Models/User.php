@@ -41,6 +41,61 @@ class User extends Authenticatable
     return $this->belongsToMany(User::class, 'tutors_students', 'student_id', 'tutor_id');
   }
 
+  public function ratingsReceived()
+  {
+    return $this->hasMany(TutorRating::class, 'tutor_id');
+  }
+
+  public function ratingsGiven()
+  {
+    return $this->hasMany(TutorRating::class, 'student_id');
+  }
+
+  public function getGivenRatingByUser($studentId)
+  {
+    $rating = $this->ratingsReceived()
+      ->where('student_id', $studentId)
+      ->first();
+    return $rating ?: null;
+  }
+
+  public function getAverageRating()
+  {
+    $ratings = $this->ratingsReceived()->pluck('rating');
+    if ($ratings->isEmpty()) {
+      return 0;
+    }
+    return $ratings->avg();
+  }
+
+  public function getRatingCount()
+  {
+    return $this->ratingsReceived()->count();
+  }
+
+  public function rateTutor($tutorId, $rating, $comment = null)
+  {
+    if ($this->role !== 'student') {
+      throw new \Exception("Only students can rate tutors.");
+    }
+
+    $existingRating = $this->ratingsGiven()
+      ->where('tutor_id', $tutorId)
+      ->first();
+
+    if ($existingRating) {
+      $existingRating->update(['rating' => $rating, 'comment' => $comment]);
+    } else {
+      TutorRating::create([
+        'tutor_id' => $tutorId,
+        'student_id' => $this->id,
+        'rating' => $rating,
+        'comment' => $comment,
+      ]);
+    }
+  }
+
+
   public static function createUser($data)
   {
     $data['password'] = bcrypt($data['password']);
@@ -425,7 +480,8 @@ class User extends Authenticatable
     return $content;
   }
 
-  public function deleteUser() {
+  public function deleteUser()
+  {
     $this->delete();
   }
 }
