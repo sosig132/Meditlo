@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -10,6 +11,7 @@ use App\Models\PossibleAnswer;
 
 class AdminDashboard extends Component
 {
+  use LivewireAlert;
   public $answers = [];
   public $possibleAnswers;
   public $users = [];
@@ -27,7 +29,7 @@ class AdminDashboard extends Component
     $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber()->map(function ($group) {
       return $group->toArray();
     })->toArray();
-    
+
 
     $this->users = User::getNonAdminUsers();
   }
@@ -71,7 +73,49 @@ class AdminDashboard extends Component
 
     PossibleAnswer::addPossibleAnswer($this->answers[$questionNumber], $questionNumber);
     $this->answers[$questionNumber] = '';
-    $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber();
+    $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber()->map(function ($group) {
+        return $group->toArray();
+      })->toArray();;
+  }
+
+  public function runCron()
+  {
+    if (!$this->isAdmin()) {
+      abort(403, 'Unauthorized action.');
+    }
+
+    \Artisan::call('app:cache-global-rating-average');
+    $this->alert('success', 'Cron job executed successfully!', [
+      'position' => 'top-end',
+      'timer' => 3000,
+      'toast' => true,
+    ]);
+  }
+
+  public function deleteAnswer($answerId)
+  {
+    if (!$this->isAdmin()) {
+      abort(403, 'Unauthorized action.');
+    }
+
+    $answer = PossibleAnswer::find($answerId);
+    if ($answer) {
+      $answer->delete();
+      $this->possibleAnswers = PossibleAnswer::getAnswersGroupedByQuestionNumber()->map(function ($group) {
+        return $group->toArray();
+      })->toArray();
+      $this->alert('success', 'Answer deleted successfully!', [
+        'position' => 'top-end',
+        'timer' => 3000,
+        'toast' => true,
+      ]);
+    } else {
+      $this->alert('error', 'Answer not found!', [
+        'position' => 'top-end',
+        'timer' => 3000,
+        'toast' => true,
+      ]);
+    }
   }
 
   public function render()

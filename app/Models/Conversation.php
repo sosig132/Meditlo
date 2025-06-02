@@ -86,10 +86,11 @@ class Conversation extends Model
                       ->orderBy('created_at', 'desc')
                       ->first();
     }
-    public static function markMessagesAsRead($conversationId)
+    public static function markMessagesAsRead($conversationId, $userId)
     {
         Message::where('conversation_id', $conversationId)
                ->where('read', false)
+               ->where('user_id', '!=', $userId)
                ->update(['read' => true]);
     }
 

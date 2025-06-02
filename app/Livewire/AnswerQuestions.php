@@ -20,7 +20,7 @@ class AnswerQuestions extends Component
     public $card_title = [
         "Doresti sa fii student sau tutore?",
         "Ce materii te intereseseaza?",
-        "Ce stil de invatare/predare ti se potriveste mai bine?",
+        "Online sau fata in fata?",
         "Ce nivel de invatamant te intereseseaza?"
     ];
 

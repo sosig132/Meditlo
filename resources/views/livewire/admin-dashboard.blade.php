@@ -16,7 +16,7 @@
                         @break
 
                         @case(3)
-                            (Ce stil de invatare/predare crezi ca ti se potriveste?)
+                            (Online sau fata in fata?)
                         @break
 
                         @case(4)
@@ -26,13 +26,13 @@
                 </h1>
 
                 @foreach ($possibleAnswers[$questionNumber] as $answer)
-                    <div>
+                    <div class="w-fit cursor-pointer" wire:click="deleteAnswer({{$answer['id']}})">
                         <p>{{ $answer['answer'] }}</p>
                     </div>
                 @endforeach
 
                 <x-form wire:submit.prevent="addAnswer({{ $questionNumber }})" class="col-span-3">
-                    <x-input label="Answer" wire:model="answers.{{ $questionNumber }}" />
+                    <x-input label="Answer" wire:model.defer="answers.{{ $questionNumber }}" />
                     <x-slot name="actions">
                         <x-button label="Add Answer" class="btn-primary" type="submit" />
                     </x-slot>
@@ -68,4 +68,10 @@
             </div>
         </div>
     </dialog>
+
+    <div>
+      <h2 class="text-2xl mb-4">Run teacher ratings CRON</h2>
+      <p class="mb-4">This will update the average global rating</p>
+      <x-button label="Run CRON" class="btn-primary" wire:click="runCron" />
+    </div>
 </div>

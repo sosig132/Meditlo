@@ -38,7 +38,7 @@ class Messages extends Component
     $this->chatters = $this->chatters->map(callback: fn($chatter) => [
       'id' => $chatter->id,
       'name' => $chatter->name,
-      'profile_picture' => $chatter->profile->profile_picture,
+      'profile_picture' => $chatter->profile->user_photo,
       'unread_messages' => $user->getConversationUnreadMessagesCount($this->getConversationId($chatter->id)),
       'last_message' => Conversation::find($this->getConversationId($chatter->id))->getLastMessage($this->getConversationId($chatter->id)),
       'conversation_id' => $this->getConversationId($chatter->id),
@@ -72,9 +72,15 @@ class Messages extends Component
     $this->selectedChatter = $chatterId;
     $this->selectedChatterName = collect($this->chatters)->firstWhere('id', $chatterId)['name'];
     $this->conversationId = $this->getConversationId($chatterId);
-    Conversation::markMessagesAsRead($this->conversationId);
+    Conversation::markMessagesAsRead($this->conversationId, $user->id);
     $this->messages = Conversation::find($this->conversationId)->getMessages($this->conversationId);
-    $this->unreadMessagesCount -= $user->getConversationUnreadMessagesCount($this->conversationId);
+    $this->unreadMessagesCount = $user->getUnreadMessagesCount();
+    $this->chatters = collect($this->chatters)->map(function ($chatter) use ($chatterId) {
+      if ($chatter['id'] == $chatterId) {
+        $chatter['unread_messages'] = 0;
+      }
+      return $chatter;
+    })->toArray();
     $this->dispatch('scrollToBottom');
   }
 
@@ -125,7 +131,6 @@ class Messages extends Component
     \Log::info('Received message:', $message);
     $this->messages[] = $message;
     $this->unreadMessagesCount++;
-    // now increase unread_messages count for the chatter who sent the message
     $chatterId = $message['user']['id'];
     $chatterConversationId = $this->getConversationId($chatterId);
     $chatter = collect($this->chatters)->firstWhere('id', $chatterId);

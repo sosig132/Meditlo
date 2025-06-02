@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -65,7 +66,7 @@ class User extends Authenticatable
     if ($ratings->isEmpty()) {
       return 0;
     }
-    return $ratings->avg();
+    return round($ratings->avg(), 1);
   }
 
   public function getRatingCount()
@@ -196,7 +197,6 @@ class User extends Authenticatable
     }
 
 
-
     return $query->get();
   }
 
@@ -318,16 +318,23 @@ class User extends Authenticatable
       ->get();
   }
   public function getUnreadMessagesCount()
-  {
-    return $this->messages()->where('read', false)->count();
-  }
+{
+    return Message::whereHas('conversation', function ($query) {
+        $query->where('user_one_id', $this->id)
+              ->orWhere('user_two_id', $this->id);
+    })
+    ->where('read', false)
+    ->where('user_id', '!=', $this->id)
+    ->count();
+}
 
   public function getConversationUnreadMessagesCount($conversationId)
   {
-    return $this->messages()
-      ->where('conversation_id', $conversationId)
-      ->where('read', false)
-      ->count();
+    
+    return Message::where('conversation_id', $conversationId)
+        ->where('read', false)
+        ->where('user_id', '!=', $this->id)
+        ->count();
   }
 
   public function userHasOwnedCategory($categoryName)
@@ -483,5 +490,14 @@ class User extends Authenticatable
   public function deleteUser()
   {
     $this->delete();
+  }
+
+  public function getSameAnswerCount($questionNumber, $userId)
+  {
+    return DB::table('answers')
+      ->join('possible_answers', 'answers.answer_id', '=', 'possible_answers.id')
+      ->where('possible_answers.question_number', 2)
+      ->where('answers.user_id', 9)
+      ->count();
   }
 }

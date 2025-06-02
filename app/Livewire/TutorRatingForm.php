@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\TutorRating;
 use App\Models\User;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -15,12 +16,14 @@ class TutorRatingForm extends Component
   public $rating;
   public $comment;
   public $hoverRating = null;
+  public $avgRating = null;
   private $successMessage = 'Rating submitted successfully!';
   private $errorMessage = 'An error occurred while submitting your rating.';
   protected $rules = [
     'rating' => 'required|integer|min:1|max:5',
     'comment' => 'nullable|string|max:500',
   ];
+  public $checkStudent;
   public function mount($tutorId)
   {
     $this->tutorId = $tutorId;
@@ -48,6 +51,8 @@ class TutorRatingForm extends Component
       $this->rating = 0;
       $this->comment = '';
     }
+    $this->avgRating = TutorRating::getAverageRating($tutorId);
+    $this->checkStudent = $this->checkStudent();
   }
 
   public function setHoverRating($rating)
@@ -60,12 +65,20 @@ class TutorRatingForm extends Component
     $this->hoverRating = $this->rating;
   }
 
+  public function checkStudent()
+  {
+    $student = auth()->user();
+    return User::checkIfStudentIsInTutorList($this->tutorId, $student->id);
+  }
+
   public function submitRating()
   {
     $this->validate();
-
     try {
       $student = auth()->user();
+      if (!$this->checkStudent()) {
+        return;
+      }
       $student->rateTutor($this->tutorId, $this->rating, $this->comment);
       $this->alert('success', $this->successMessage, [
         'position' => 'top',

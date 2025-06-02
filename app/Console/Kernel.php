@@ -12,7 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('app:cache-global-rating-average')->everyThreeHours()->withoutOverlapping()->onFailure(function () {
+            \Log::error('Failed to cache global rating average');
+        });
+        $schedule->command('app:cache-global-rating-average')->dailyAt('00:00')->onFailure(function () {
+            \Log::error('Failed to cache global rating average at daily schedule');
+        });
     }
 
     /**
