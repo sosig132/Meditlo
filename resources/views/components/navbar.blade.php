@@ -71,7 +71,7 @@
                     </li>
                 </ul>
             @else
-                <livewire:login />
+                <livewire:auth.login />
                 <button class="btn btn-primary" onclick="login_modal.showModal()">Login</button>
             @endauth
 

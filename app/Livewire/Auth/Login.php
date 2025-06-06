@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-
 
 class Login extends Component
 {
@@ -41,6 +39,6 @@ class Login extends Component
     }
     public function render()
     {
-        return view('livewire.login');
+        return view('livewire.auth.login');
     }
 }

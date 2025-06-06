@@ -70,12 +70,16 @@
                                 <div class="flex flex-col w-full">
                                     <span class="font-medium">{{ $chatter['name'] }}</span>
                                     <div class="flex flex-row">
+                                        @if ($chatter['last_message'])
                                         <span class="text-sm text-gray-500">
                                             {{ \Illuminate\Support\Str::limit($chatter['last_message']['body'], 15, '...') }}
                                         </span>
+                                        @endif
+                                        @if ($chatter['last_message'])
                                         <span class="text-sm text-gray-500 ml-auto">
                                             {{ \Carbon\Carbon::parse($chatter['last_message']['created_at'])->diffForHumans() }}
                                         </span>
+                                        @endif
                                     </div>
                                 </div>
                             </button>

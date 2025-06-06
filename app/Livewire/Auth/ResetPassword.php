@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -80,6 +80,6 @@ class ResetPassword extends Component
 
     public function render()
     {
-        return view('livewire.reset-password');
+        return view('livewire.auth.reset-password');
     }
 }

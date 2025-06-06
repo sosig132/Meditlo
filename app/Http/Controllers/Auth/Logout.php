@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Illuminate\Http\Request;
 
-class Logout extends Component
+class Logout extends Controller
 {
 
     public function logout(Request $request)

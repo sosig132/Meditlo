@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Dashboards;
 
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Component;
@@ -120,7 +120,7 @@ class AdminDashboard extends Component
 
   public function render()
   {
-    return view('livewire.admin-dashboard', [
+    return view('livewire.dashboards.admin-dashboard', [
       'questions' => range(1, 4),
     ]);
   }

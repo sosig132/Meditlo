@@ -35,5 +35,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('student', function () {
             return auth()->check() && auth()->user()->isStudent();
         });
+        
     }
 }

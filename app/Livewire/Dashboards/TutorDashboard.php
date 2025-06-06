@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Dashboards;
 
 use App\Models\Content;
 use App\Models\User;
@@ -395,6 +395,6 @@ class TutorDashboard extends Component
 
   public function render()
   {
-    return view('livewire.tutor-dashboard');
+    return view('livewire.dashboards.tutor-dashboard');
   }
 }
