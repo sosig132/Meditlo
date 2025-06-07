@@ -64,15 +64,13 @@ class RatingService
   public function computeBayesianAverage(float $userRatingAverage, int $userRatingCount): float
   {
     $globalAverage = $this->getCachedGlobalAverage();
-    $globalRatingCount = TutorRating::count();
-    if ($globalRatingCount === 0) {
-      return $userRatingAverage;
-    }
+    $m = 10;
+
     if ($userRatingCount === 0) {
       return 0.0;
     }
 
-    return ($userRatingAverage * $userRatingCount + $globalAverage * $globalRatingCount) / ($userRatingCount + $globalRatingCount);
+    return ($userRatingAverage * $userRatingCount + $globalAverage * $m) / ($userRatingCount + $m);
   }
 
   /**
@@ -82,7 +80,7 @@ class RatingService
    * @param float $lambda
    * @return array
    */
-  public function computeWeightedAverage(int $tutorId, float $lambda = 0.5): array
+  public function computeWeightedAverage(int $tutorId, float $lambda = 0.1): array
   {
 
     $ratings = TutorRating::where('tutor_id', $tutorId)->get(['rating', 'created_at']);
@@ -95,8 +93,8 @@ class RatingService
     $totalWeight = 0;
 
     foreach ($ratings as $rating) {
-      $ageInDays = $now->diffInDays($rating->created_at);
-      $weight = exp(-$lambda * $ageInDays);
+      $ageInMonths = $now->diffInMonths($rating->created_at);
+      $weight = exp(-$lambda * $ageInMonths);
       $weightedSum += $rating->rating * $weight;
       $totalWeight += $weight;
     }
