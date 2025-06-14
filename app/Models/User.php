@@ -503,4 +503,54 @@ class User extends Authenticatable
       ->where('answers.user_id', 9)
       ->count();
   }
+
+  // New relationships for tutor sessions
+  public function tutorSessions()
+  {
+    return $this->hasMany(TutorSession::class, 'tutor_id');
+  }
+
+  public function upcomingTutorSessions()
+  {
+    return $this->tutorSessions()
+      ->where('start_time', '>', now())
+      ->where('status', 'scheduled')
+      ->orderBy('start_time');
+  }
+
+  public function pastTutorSessions()
+  {
+    return $this->tutorSessions()
+      ->where('start_time', '<', now())
+      ->whereIn('status', ['completed', 'cancelled'])
+      ->orderByDesc('start_time');
+  }
+
+  public function registeredSessions()
+  {
+    return $this->hasManyThrough(
+      TutorSession::class,
+      SessionParticipant::class,
+      'student_id',
+      'id',
+      'id',
+      'session_id'
+    )->where('session_participants.status', 'registered');
+  }
+
+  public function upcomingRegisteredSessions()
+  {
+    return $this->registeredSessions()
+      ->where('start_time', '>', now())
+      ->where('status', 'scheduled')
+      ->orderBy('start_time');
+  }
+
+  public function pastRegisteredSessions()
+  {
+    return $this->registeredSessions()
+      ->where('start_time', '<', now())
+      ->whereIn('status', ['completed', 'cancelled'])
+      ->orderByDesc('start_time');
+  }
 }

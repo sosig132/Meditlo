@@ -159,33 +159,33 @@
 
     <!-- Create Group Modal -->
     <dialog id="create_group_modal" class="modal" wire:ignore.self>
-        <div class="modal-box">
+        <div class="modal-box bg-gray-800 text-gray-100">
             <h3 class="font-bold text-lg mb-4">Create Group Chat</h3>
-            <div class="form-control">
+            <div class="form-control w-full mb-4">
                 <label class="label">
-                    <span class="label-text">Group Name</span>
+                    <span class="label-text text-gray-300">Group Name</span>
                 </label>
-                <input type="text" wire:model="groupName" class="input input-bordered" placeholder="Enter group name">
-                @error('groupName') <span class="text-error text-sm">{{ $message }}</span> @enderror
+                <input type="text" wire:model="groupName" class="input input-bordered w-full bg-gray-700 text-gray-100" placeholder="Enter group name">
+                @error('groupName') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
-            <div class="form-control mt-4">
+            <div class="form-control w-full mb-4">
                 <label class="label">
-                    <span class="label-text">Select Students</span>
+                    <span class="label-text text-gray-300">Select Students</span>
                 </label>
-                <div class="max-h-60 overflow-y-auto">
+                <div class="max-h-60 overflow-y-auto bg-gray-700 rounded-lg p-4">
                     @foreach (auth()->user()->students as $student)
-                        <label class="label cursor-pointer justify-start gap-2">
-                            <input type="checkbox" wire:model="selectedStudents" value="{{ $student->id }}" class="checkbox">
+                        <label class="label cursor-pointer justify-start gap-2 text-gray-300">
+                            <input type="checkbox" wire:model="selectedStudents" value="{{ $student->id }}" class="checkbox checkbox-primary">
                             <span class="label-text">{{ $student->name }}</span>
                         </label>
                     @endforeach
                 </div>
-                @error('selectedStudents') <span class="text-error text-sm">{{ $message }}</span> @enderror
+                @error('selectedStudents') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div class="modal-action">
-                <button class="btn" onclick="create_group_modal.close()">Cancel</button>
+                <button class="btn btn-ghost" onclick="create_group_modal.close()">Cancel</button>
                 <button class="btn btn-primary" wire:click="createGroupChat" onclick="create_group_modal.close()">Create Group</button>
             </div>
         </div>
@@ -193,30 +193,30 @@
 
     <!-- Group Settings Modal -->
     <dialog id="group_settings_modal" class="modal" wire:ignore.self>
-        <div class="modal-box">
+        <div class="modal-box bg-gray-800 text-gray-100">
             <h3 class="font-bold text-lg mb-4">Group Settings</h3>
             
-            <div class="form-control">
+            <div class="form-control w-full mb-4">
                 <label class="label">
-                    <span class="label-text">Group Participants</span>
+                    <span class="label-text text-gray-300">Group Participants</span>
                 </label>
-                <div class="max-h-60 overflow-y-auto">
+                <div class="max-h-60 overflow-y-auto bg-gray-700 rounded-lg p-4">
                     @foreach ($availableStudents as $student)
-                        <label class="label cursor-pointer justify-start gap-2">
+                        <label class="label cursor-pointer justify-start gap-2 text-gray-300">
                             <input type="checkbox" 
                                    wire:model="selectedGroupParticipants" 
                                    value="{{ $student->id }}" 
-                                   class="checkbox"
+                                   class="checkbox checkbox-primary"
                                    @if(in_array($student->id, $currentGroupParticipants)) checked @endif>
                             <span class="label-text">{{ $student->name }}</span>
                         </label>
                     @endforeach
                 </div>
-                @error('selectedGroupParticipants') <span class="text-error text-sm">{{ $message }}</span> @enderror
+                @error('selectedGroupParticipants') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
             </div>
 
             <div class="modal-action">
-                <button class="btn" onclick="group_settings_modal.close()">Cancel</button>
+                <button class="btn btn-ghost" onclick="group_settings_modal.close()">Cancel</button>
                 <button class="btn btn-primary" wire:click="updateGroupParticipants" onclick="group_settings_modal.close()">Save Changes</button>
             </div>
         </div>

@@ -145,6 +145,9 @@
         </div>
         @if (Auth::id() == $userId && Auth::user()->role == 'tutor')
             <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
+                <livewire:tutor-calendar :tutorId="$userId" />
+            </div>
+            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
                 <div class="flex justify-center profile:justify-start">
                     <button
                         class="w-full bg-black/35  hover:bg-black/40 text-white font-semibold py-4 rounded-lg text-lg flex items-center justify-center space-x-2 transition duration-300"
@@ -185,6 +188,10 @@
                         <span style="color: #647180"> &nbsp; Delete a category</span>
                     </button>
                 </div>
+            </div>
+        @elseif (Auth::user()->role == 'student' && $user->role == 'tutor')
+            <div class="mt-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-4xl">
+                <livewire:tutor-calendar :tutorId="$userId" />
             </div>
         @endif
         @foreach ($categories as $category)
@@ -364,13 +371,18 @@
         </div>
     </div>
     <dialog id="category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
-        <div class="modal-box">
-            <h2 class="modal-title text-2xl mb-3">Add a category</h2>
-            <hr class="my-3 border-t-1 border-gray-200 opacity-30">
+        <div class="modal-box bg-gray-800 text-gray-100">
+            <h2 class="font-bold text-lg mb-4">Add a Category</h2>
             <x-form wire:submit.prevent="addCategory">
-                <x-input label="Category" type="text" wire:model="newCategory" />
+                <div class="form-control w-full mb-4">
+                    <label class="label">
+                        <span class="label-text text-gray-300">Category</span>
+                    </label>
+                    <input type="text" wire:model="newCategory" class="input input-bordered w-full bg-gray-700 text-gray-100" placeholder="Enter category name">
+                    @error('newCategory') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
                 <x-slot:actions>
-                    <x-button onclick="category_modal.close()" label="Cancel" />
+                    <x-button onclick="category_modal.close()" label="Cancel" class="btn-ghost" />
                     <x-button label="Add" class="btn-primary" type="submit" spinner="login" />
                 </x-slot:actions>
             </x-form>
@@ -378,14 +390,18 @@
     </dialog>
 
     <dialog id="delete_category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
-        <div class="modal-box">
-            <h2 class="modal-title text-2xl mb-3">Delete a category</h2>
-            <hr class="my-3 border-t-1 border-gray-200 opacity-30">
+        <div class="modal-box bg-gray-800 text-gray-100">
+            <h2 class="font-bold text-lg mb-4">Delete a Category</h2>
             <x-form wire:submit.prevent="deleteCategory">
-                <x-input label="Category" type="text" wire:model="categoryToDelete"
-                    placeholder="Enter the exact category name" />
+                <div class="form-control w-full mb-4">
+                    <label class="label">
+                        <span class="label-text text-gray-300">Category</span>
+                    </label>
+                    <input type="text" wire:model="categoryToDelete" class="input input-bordered w-full bg-gray-700 text-gray-100" placeholder="Enter the exact category name">
+                    @error('categoryToDelete') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                </div>
                 <x-slot:actions>
-                    <x-button onclick="delete_category_modal.close()" label="Cancel" />
+                    <x-button onclick="delete_category_modal.close()" label="Cancel" class="btn-ghost" />
                     <x-button label="Delete" class="btn-primary" type="submit" spinner="login" />
                 </x-slot:actions>
             </x-form>
