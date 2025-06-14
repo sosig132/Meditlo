@@ -93,6 +93,8 @@ class Messages extends Component
         ? $conversation->name
         : $otherParticipants->first()->name;
 
+      $lastMessage = $conversation->getLastMessage($conversation->id);
+
       return [
         'id' => $conversation->id,
         'name' => $name,
@@ -101,11 +103,22 @@ class Messages extends Component
           ? null
           : $otherParticipants->first()->profile->user_photo,
         'unread_messages' => $user->getConversationUnreadMessagesCount($conversation->id),
-        'last_message' => $conversation->getLastMessage($conversation->id),
+        'last_message' => $lastMessage,
+        'has_messages' => $lastMessage !== null,
+        'last_message_time' => $lastMessage ? $lastMessage->created_at : $conversation->created_at,
         'conversation_id' => $conversation->id,
         'participants' => $conversation->participants->pluck('name')->toArray(),
       ];
-    })->toArray();
+    })
+    ->sort(function ($a, $b) {
+      if ($a['has_messages'] !== $b['has_messages']) {
+        return $b['has_messages'] ? 1 : -1;
+      }
+      return $b['last_message_time']->timestamp - $a['last_message_time']->timestamp;
+    })
+    ->values()
+    ->toArray();
+
     $this->unreadMessagesCount = $user->getUnreadMessagesCount();
     $this->conversationsCreated = true;
     $this->dispatch('conversationsUpdated', ['chatters' => $this->chatters]);

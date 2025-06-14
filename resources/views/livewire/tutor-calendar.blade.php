@@ -32,9 +32,11 @@
     <div class="bg-gray-800 rounded-lg shadow-lg p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold text-gray-100">Tutoring Schedule</h2>
+            @if($isTutor)
                 <button wire:click="openCreateModal" class="btn btn-primary">
                     Create New Session
-                </button>
+                </button>  
+            @endif
         </div>
 
         <div id="calendar" class="bg-white rounded-lg p-4" wire:ignore></div>
