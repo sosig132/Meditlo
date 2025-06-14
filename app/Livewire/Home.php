@@ -107,6 +107,7 @@ class Home extends Component
     
     if (!$filteredUsers->isEmpty()) {
       $this->users = $filteredUsers;
+      $this->sortUsers();
       return $this->users;
     }
     $this->users = collect();

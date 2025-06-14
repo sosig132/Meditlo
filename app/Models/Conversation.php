@@ -8,27 +8,62 @@ use Illuminate\Database\Eloquent\Model;
 class Conversation extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_one_id', 'user_two_id'];
 
-    public function userOne()
-    {
-        return $this->belongsTo(User::class, 'user_one_id');
-    }
+    protected $fillable = ['is_group', 'name', 'created_by'];
 
-    /**
-     * Get the second user (the recipient).
-     */
-    public function userTwo()
-    {
-        return $this->belongsTo(User::class, 'user_two_id');
-    }
-
-    /**
-     * Get all messages in this conversation.
-     */
     public function messages()
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'users_conversations')
+            ->withPivot('is_admin', 'joined_at', 'left_at')
+            ->whereNull('users_conversations.left_at');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function getLastMessage($conversationId)
+    {
+        return Message::where('conversation_id', $conversationId)
+            ->latest()
+            ->first();
+    }
+
+    public function markMessagesAsRead($conversationId, $userId)
+    {
+        Message::where('conversation_id', $conversationId)
+            ->where('user_id', '!=', $userId)
+            ->where('read', false)
+            ->update(['read' => true]);
+    }
+
+    public function addParticipant($userId, $isAdmin = false)
+    {
+        $this->participants()->attach($userId, [
+            'is_admin' => $isAdmin,
+            'joined_at' => now()
+        ]);
+    }
+
+    public function removeParticipant($userId)
+    {
+        $this->participants()->updateExistingPivot($userId, [
+            'left_at' => now()
+        ]);
+    }
+
+    public function isAdmin($userId)
+    {
+        return $this->participants()
+            ->where('user_id', $userId)
+            ->where('is_admin', true)
+            ->exists();
     }
 
     /**
@@ -80,18 +115,4 @@ class Conversation extends Model
                       ->first()
                       ->body;
     }
-    public function getLastMessage($conversationId)
-    {
-        return Message::where('conversation_id', $conversationId)
-                      ->orderBy('created_at', 'desc')
-                      ->first();
-    }
-    public static function markMessagesAsRead($conversationId, $userId)
-    {
-        Message::where('conversation_id', $conversationId)
-               ->where('read', false)
-               ->where('user_id', '!=', $userId)
-               ->update(['read' => true]);
-    }
-
 }

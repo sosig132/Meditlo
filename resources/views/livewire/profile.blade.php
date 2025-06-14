@@ -109,8 +109,8 @@
         <div class="flex lg:hidden w-full profile:[width:unset] md:flex-row flex-col">
             <div
                 class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-                <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
-                    vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
+                <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'What' : 'What' }} subjects
+                    do I want to {{ $user->role == 'student' || $user->role == 'admin' ? 'learn' : 'teach' }}</h3>
                 <ul class="list-disc list-inside mt-4 text-gray-300">
                     @foreach ($materii as $materie)
                         <li>
@@ -121,7 +121,7 @@
             </div>
             <div
                 class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-                <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
+                <h3 class="text-2xl font-semibold text-gray-100">Education level</h3>
                 <ul class="list-disc list-inside mt-4 text-gray-300">
                     @foreach ($nivel as $nv)
                         <li>
@@ -132,8 +132,8 @@
             </div>
             <div
                 class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-                <h3 class="text-2xl font-semibold text-gray-100">Stilul de
-                    {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
+                <h3 class="text-2xl font-semibold text-gray-100">Preferred
+                    {{ $user->role == 'student' || $user->role == 'admin' ? 'learning' : 'teaching' }} style</h3>
                 <ul class="list-disc list-inside mt-4 text-gray-300">
                     @foreach ($stil_invatare as $si)
                         <li>
@@ -160,7 +160,7 @@
                                 </g>
                             </svg>
                         </div>
-                        <span style="color: #647180">Adaugă o categorie</span>
+                        <span style="color: #647180">Add a category</span>
                     </button>
                 </div>
             </div>
@@ -182,7 +182,7 @@
                                 </g>
                             </svg>
                         </div>
-                        <span style="color: #647180"> &nbsp; Sterge o categorie</span>
+                        <span style="color: #647180"> &nbsp; Delete a category</span>
                     </button>
                 </div>
             </div>
@@ -329,8 +329,8 @@
     <div class="hidden lg:flex w-full profile:[width:unset] flex-col md:flex-row profile:flex-col">
         <div
             class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-t-lg p-8  md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-            <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'La ce' : 'Ce' }} materii
-                vreau sa {{ $user->role == 'student' || $user->role == 'admin' ? 'invat' : 'predau' }}</h3>
+            <h3 class="text-2xl font-semibold text-gray-100">{{ $user->role == 'Student' ? 'What' : 'What' }} subjects
+                do I want to {{ $user->role == 'student' || $user->role == 'admin' ? 'learn' : 'teach' }}</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
                 @foreach ($materii as $materie)
                     <li>
@@ -341,7 +341,7 @@
         </div>
         <div
             class="bg-gray-800 text-gray-100 shadow-lg  p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-            <h3 class="text-2xl font-semibold text-gray-100">Nivelul de invatamant</h3>
+            <h3 class="text-2xl font-semibold text-gray-100">Education level</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
                 @foreach ($nivel as $nv)
                     <li>
@@ -352,8 +352,8 @@
         </div>
         <div
             class="bg-gray-800 text-gray-100 shadow-lg profile:rounded-b-lg p-8 md:max-w-xs w-full profile:px-8 flex-1 md:mt-0 profile:mt-4">
-            <h3 class="text-2xl font-semibold text-gray-100">Stilul de
-                {{ $user->role == 'student' || $user->role == 'admin' ? 'invatare' : 'predare' }} preferat</h3>
+            <h3 class="text-2xl font-semibold text-gray-100">Preferred
+                {{ $user->role == 'student' || $user->role == 'admin' ? 'learning' : 'teaching' }} style</h3>
             <ul class="list-disc list-inside mt-4 text-gray-300">
                 @foreach ($stil_invatare as $si)
                     <li>
@@ -365,13 +365,13 @@
     </div>
     <dialog id="category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
         <div class="modal-box">
-            <h2 class="modal-title text-2xl mb-3">Adaugă o categorie</h2>
+            <h2 class="modal-title text-2xl mb-3">Add a category</h2>
             <hr class="my-3 border-t-1 border-gray-200 opacity-30">
             <x-form wire:submit.prevent="addCategory">
                 <x-input label="Category" type="text" wire:model="newCategory" />
                 <x-slot:actions>
                     <x-button onclick="category_modal.close()" label="Cancel" />
-                    <x-button label="Adauga" class="btn-primary" type="submit" spinner="login" />
+                    <x-button label="Add" class="btn-primary" type="submit" spinner="login" />
                 </x-slot:actions>
             </x-form>
         </div>
@@ -379,14 +379,14 @@
 
     <dialog id="delete_category_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
         <div class="modal-box">
-            <h2 class="modal-title text-2xl mb-3">Sterge o categorie</h2>
+            <h2 class="modal-title text-2xl mb-3">Delete a category</h2>
             <hr class="my-3 border-t-1 border-gray-200 opacity-30">
             <x-form wire:submit.prevent="deleteCategory">
                 <x-input label="Category" type="text" wire:model="categoryToDelete"
-                    placeholder="Scrie numele exact al categoriei" />
+                    placeholder="Enter the exact category name" />
                 <x-slot:actions>
                     <x-button onclick="delete_category_modal.close()" label="Cancel" />
-                    <x-button label="Sterge" class="btn-primary" type="submit" spinner="login" />
+                    <x-button label="Delete" class="btn-primary" type="submit" spinner="login" />
                 </x-slot:actions>
             </x-form>
         </div>

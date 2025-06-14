@@ -19,9 +19,17 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('chat.{conversationId}', function ($user, $conversationId) {
-  return Conversation::where('id', $conversationId)
-      ->where(function ($query) use ($user) {
-          $query->where('user_one_id', $user->id)
-                ->orWhere('user_two_id', $user->id);
-      })->exists();
+    $result = Conversation::where('id', $conversationId)
+        ->whereHas('participants', function ($query) use ($user) {
+            $query->where('users.id', $user->id)
+                  ->whereNull('users_conversations.left_at');
+        })->exists();
+    
+    \Log::info('Channel Authorization Check', [
+        'user_id' => $user->id,
+        'conversation_id' => $conversationId,
+        'authorized' => $result
+    ]);
+    
+    return $result;
 });

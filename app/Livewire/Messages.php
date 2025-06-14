@@ -4,11 +4,15 @@ namespace App\Livewire;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class Messages extends Component
 {
+  use LivewireAlert;
+
   public $messages = [];
   public $showDrawer = false;
   public $unreadMessagesCount = 0;
@@ -17,94 +21,122 @@ class Messages extends Component
   public $conversationId = null;
   public $selectedChatter = null;
   public $selectedChatterName = '';
-  protected $listeners = ['messageReceived'];
+  public $showCreateGroupModal = false;
+  public $groupName = '';
+  public $selectedStudents = [];
+  public $showGroupSettingsModal = false;
+  public $availableStudents = [];
+  public $currentGroupParticipants = [];
+  public $selectedGroupParticipants = [];
   public $conversationsCreated = false;
+
+  protected $listeners = ['messageReceived'];
+
   public function mount()
   {
     $this->showDrawer = false;
     $user = Auth::user();
 
-    if ($user->role === 'student') {
-      $this->chatters = $user->tutors()->get();
+    // Ensure private conversations exist between the user and their related users
+    if ($user->isTutor()) {
+      $relatedUsers = $user->students;
+    } else {
+      $relatedUsers = [$user->tutor];
     }
-    if ($user->role === 'tutor') {
-      $this->chatters = $user->students()->get();
-    }
-    
-    $this->createConversationsForUser();
-    if (!$this->chatters) {
-      $this->chatters = collect();
-    }
-    $this->chatters = $this->chatters->map(callback: fn($chatter) => [
-      'id' => $chatter->id,
-      'name' => $chatter->name,
-      'profile_picture' => $chatter->profile->user_photo,
-      'unread_messages' => $user->getConversationUnreadMessagesCount($this->getConversationId($chatter->id)),
-      'last_message' => Conversation::find($this->getConversationId($chatter->id))->getLastMessage($this->getConversationId($chatter->id)),
-      'conversation_id' => $this->getConversationId($chatter->id),
-    ]);
 
-    $this->chatters = $this->chatters->toArray();
-    $this->unreadMessagesCount = $user->getUnreadMessagesCount();
-  }
+    foreach ($relatedUsers as $relatedUser) {
+      if (!$relatedUser)
+        continue; // Skip if no related user (e.g., student without tutor)
 
-  public function createConversationsForUser()
-  {
-    $userId = Auth::user()->id;
-    foreach ($this->chatters as $chatter) {
-      $chatterId = $chatter['id'];
-      $conversation = Conversation::between($userId, $chatterId);
+      // Check if a private conversation already exists
+      $existingConversation = Conversation::where('is_group', false)
+        ->whereHas('participants', function ($query) use ($user, $relatedUser) {
+          $query->whereIn('users.id', [$user->id, $relatedUser->id]);
+        })
+        ->whereDoesntHave('participants', function ($query) use ($user, $relatedUser) {
+          $query->whereNotIn('users.id', [$user->id, $relatedUser->id]);
+        })
+        ->first();
 
-      if (!$conversation) {
-        Conversation::create([
-          'user_one_id' => $userId,
-          'user_two_id' => $chatterId,
+      if (!$existingConversation) {
+        // Create new private conversation
+        $conversation = Conversation::create([
+          'is_group' => false,
+          'created_by' => $user->id,
         ]);
+
+        // Add both users as participants
+        $conversation->addParticipant($user->id);
+        $conversation->addParticipant($relatedUser->id);
       }
     }
-    $this->dispatch('conversationsCreated');
+
+    $this->loadConversations();
     $this->conversationsCreated = true;
   }
 
-  public function selectChatter($chatterId)
+  public function loadConversations()
   {
     $user = Auth::user();
-    $this->selectedChatter = $chatterId;
-    $this->selectedChatterName = collect($this->chatters)->firstWhere('id', $chatterId)['name'];
-    $this->conversationId = $this->getConversationId($chatterId);
-    Conversation::markMessagesAsRead($this->conversationId, $user->id);
-    $this->messages = Conversation::find($this->conversationId)->getMessages($this->conversationId);
+    $conversations = $user->conversations()
+      ->with([
+        'participants',
+        'messages' => function ($query) {
+          $query->latest();
+        }
+      ])
+      ->get();
+
+    $this->chatters = $conversations->map(function ($conversation) use ($user) {
+      $otherParticipants = $conversation->participants->where('id', '!=', $user->id);
+      $name = $conversation->is_group
+        ? $conversation->name
+        : $otherParticipants->first()->name;
+
+      return [
+        'id' => $conversation->id,
+        'name' => $name,
+        'is_group' => $conversation->is_group,
+        'profile_picture' => $conversation->is_group
+          ? null
+          : $otherParticipants->first()->profile->user_photo,
+        'unread_messages' => $user->getConversationUnreadMessagesCount($conversation->id),
+        'last_message' => $conversation->getLastMessage($conversation->id),
+        'conversation_id' => $conversation->id,
+        'participants' => $conversation->participants->pluck('name')->toArray(),
+      ];
+    })->toArray();
     $this->unreadMessagesCount = $user->getUnreadMessagesCount();
-    $this->chatters = collect($this->chatters)->map(function ($chatter) use ($chatterId) {
-      if ($chatter['id'] == $chatterId) {
+    $this->conversationsCreated = true;
+    $this->dispatch('conversationsUpdated', ['chatters' => $this->chatters]);
+  }
+
+  public function selectChatter($conversationId)
+  {
+    $user = Auth::user();
+    $conversation = Conversation::find($conversationId);
+
+    if (!$conversation)
+      return;
+
+    $this->selectedChatter = $conversationId;
+    $this->selectedChatterName = $conversation->is_group
+      ? $conversation->name
+      : $conversation->participants->where('id', '!=', $user->id)->first()->name;
+
+    $this->conversationId = $conversationId;
+    $conversation->markMessagesAsRead($conversationId, $user->id);
+    $this->messages = $conversation->messages;
+    $this->unreadMessagesCount = $user->getUnreadMessagesCount();
+
+    $this->chatters = collect($this->chatters)->map(function ($chatter) use ($conversationId) {
+      if ($chatter['conversation_id'] == $conversationId) {
         $chatter['unread_messages'] = 0;
       }
       return $chatter;
     })->toArray();
+
     $this->dispatch('scrollToBottom');
-  }
-
-  public function goBack()
-  {
-    $this->selectedChatter = null;
-    $this->conversationId = null;
-    $this->messages = [];
-    $this->dispatch('scrollToTop');
-  }
-
-  public function getConversationId($chatterId)
-  {
-    $userId = Auth::user()->id;
-    $conversation = Conversation::between($userId, $chatterId);
-
-    if (!$conversation) {
-      $conversation = Conversation::create([
-        'user_one_id' => $userId,
-        'user_two_id' => $chatterId,
-      ]);
-    }
-
-    return $conversation->id;
   }
 
   public function sendMessage()
@@ -121,43 +153,113 @@ class Messages extends Component
     broadcast(new \App\Events\MessageSent($message))->toOthers();
 
     $this->messages[] = $message;
-
     $this->messageText = '';
     $this->dispatch('scrollToBottom');
   }
 
   public function messageReceived($message)
   {
-    \Log::info('Received message:', $message);
+    $message = Message::find($message['id']);
     $this->messages[] = $message;
-    $this->unreadMessagesCount++;
-    $chatterId = $message['user']['id'];
-    $chatterConversationId = $this->getConversationId($chatterId);
-    $chatter = collect($this->chatters)->firstWhere('id', $chatterId);
-    if ($chatter) {
-      $chatter['unread_messages']++;
-      $this->chatters = collect($this->chatters)->map(function ($chatter) use ($chatterId, $chatterConversationId) {
-        if ($chatter['id'] == $chatterId) {
-          $chatter['unread_messages']++;
-          $chatter['last_message'] = Conversation::find($chatterConversationId)->getLastMessage($chatterConversationId);
+
+    $conversation = Conversation::find($message['conversation_id']);
+    if ($conversation) {
+      $this->chatters = collect($this->chatters)->map(function ($chatter) use ($conversation, $message) {
+        if ($chatter['conversation_id'] == $conversation->id) {
+          if ($this->selectedChatter !== $conversation->id) {
+            $chatter['unread_messages']++;
+            $this->unreadMessagesCount++;
+          } else {
+            $conversation->markMessagesAsRead($conversation->id, Auth::id());
+          }
+          $chatter['last_message'] = $message;
         }
         return $chatter;
-      });
+      })->toArray();
     }
   }
 
-  public function deselectChatter()
-  {
-    $this->selectedChatter = null;
-    $this->conversationId = null;
-    $this->messages = [];
-    $this->dispatch('scrollToTop');
-  }
-  
   public function toggleDrawer()
   {
     $this->showDrawer = !$this->showDrawer;
   }
+
+  public function createGroupChat()
+  {
+    $this->validate([
+      'groupName' => 'required|min:3|max:50',
+      'selectedStudents' => 'required|array|min:1',
+    ]);
+
+    $conversation = Conversation::create([
+      'name' => $this->groupName,
+      'is_group' => true,
+      'created_by' => Auth::id(),
+    ]);
+
+    // Add creator as admin
+    $conversation->addParticipant(Auth::id(), true);
+
+    // Add selected students
+    foreach ($this->selectedStudents as $studentId) {
+      $conversation->addParticipant($studentId);
+    }
+
+    $this->showCreateGroupModal = false;
+    $this->loadConversations();
+    $this->alert('success', 'Group chat created successfully!');
+    $this->groupName = '';
+    $this->selectedStudents = [];
+  }
+
+  public function showGroupSettings()
+  {
+    if (!$this->selectedChatter)
+      return;
+
+    $conversation = Conversation::find($this->selectedChatter);
+    if (!$conversation->is_group || !$conversation->isAdmin(Auth::id())) {
+      $this->alert('error', 'You do not have permission to manage this group.');
+      return;
+    }
+
+    $this->currentGroupParticipants = $conversation->participants->pluck('id')->toArray();
+    $this->selectedGroupParticipants = $this->currentGroupParticipants;
+    $this->availableStudents = Auth::user()->students;
+
+    $this->showGroupSettingsModal = true;
+    $this->dispatch('showGroupSettings');
+  }
+
+  public function updateGroupParticipants()
+  {
+    $conversation = Conversation::find($this->selectedChatter);
+    if (!$conversation->is_group || !$conversation->isAdmin(Auth::id())) {
+      $this->alert('error', 'You do not have permission to manage this group.');
+      return;
+    }
+
+    // Ensure the admin is always included in the participants
+    if (!in_array(Auth::id(), $this->selectedGroupParticipants)) {
+      $this->selectedGroupParticipants[] = Auth::id();
+    }
+
+    // Sync all participants at once
+    $conversation->syncParticipants($this->selectedGroupParticipants, Auth::id());
+
+    $this->loadConversations();
+    $this->showGroupSettingsModal = false;
+    $this->alert('success', 'Group participants updated successfully!');
+  }
+
+  public function deselectChat()
+  {
+    $this->selectedChatter = null;
+    $this->selectedChatterName = '';
+    $this->conversationId = null;
+    $this->messages = [];
+  }
+
   public function render()
   {
     return view('livewire.messages');

@@ -8,19 +8,19 @@
                 <h1>Answers for Question {{ $questionNumber }}:
                     @switch($questionNumber)
                         @case(1)
-                            (Ce fel de cont?)
+                            (What type of account?)
                         @break
 
                         @case(2)
-                            (Ce materii cauti?)
+                            (What subjects are you looking for?)
                         @break
 
                         @case(3)
-                            (Online sau fata in fata?)
+                            (Online or in person?)
                         @break
 
                         @case(4)
-                            (Ce nivel de invatamant te intereseaza?)
+                            (What education level are you interested in?)
                         @break
                     @endswitch
                 </h1>

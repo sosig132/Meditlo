@@ -15,15 +15,15 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Materie",
+            placeholder: "Subject",
             render: {
                 no_results: function() {
-                    return '<p>Niciun rezultat gasit</p>';
+                    return '<p>No results found</p>';
                 }
             },
             plugins: {
                 remove_button: {
-                    title: 'Sterge filtrul',
+                    title: 'Remove filter',
                     className: 'p-1'
                 }
             }
@@ -34,15 +34,15 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Nivel",
+            placeholder: "Level",
             render: {
                 no_results: function() {
-                    return '<p>Niciun rezultat gasit</p>';
+                    return '<p>No results found</p>';
                 }
             },
             plugins: {
                 remove_button: {
-                    title: 'Sterge filtrul',
+                    title: 'Remove filter',
                     className: 'p-1'
                 }
             }
@@ -53,15 +53,15 @@
                 field: 'text',
                 direction: 'asc'
             },
-            placeholder: "Stil de invatare",
+            placeholder: "Learning style",
             render: {
                 no_results: function() {
-                    return '<p>Niciun rezultat gasit</p>';
+                    return '<p>No results found</p>';
                 }
             },
             plugins: {
                 remove_button: {
-                    title: 'Sterge filtrul',
+                    title: 'Remove filter',
                     className: 'p-1'
                 }
             }

@@ -303,8 +303,9 @@ class User extends Authenticatable
 
   public function conversations()
   {
-    return $this->hasMany(Conversation::class, 'user_one_id')
-      ->orWhere('user_two_id', $this->id);
+    return $this->belongsToMany(Conversation::class, 'users_conversations')
+      ->whereNull('users_conversations.left_at')
+      ->withPivot('is_admin', 'joined_at', 'left_at');
   }
 
   public function getAllUserConversations()
@@ -317,20 +318,22 @@ class User extends Authenticatable
       ])
       ->get();
   }
+
   public function getUnreadMessagesCount()
-{
+  {
     return Message::whereHas('conversation', function ($query) {
-        $query->where('user_one_id', $this->id)
-              ->orWhere('user_two_id', $this->id);
+        $query->whereHas('participants', function ($q) {
+            $q->where('users.id', $this->id)
+              ->whereNull('users_conversations.left_at');
+        });
     })
     ->where('read', false)
     ->where('user_id', '!=', $this->id)
     ->count();
-}
+  }
 
   public function getConversationUnreadMessagesCount($conversationId)
   {
-    
     return Message::where('conversation_id', $conversationId)
         ->where('read', false)
         ->where('user_id', '!=', $this->id)

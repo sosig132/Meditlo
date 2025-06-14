@@ -23,15 +23,15 @@
             </div>
         </div>
         <div class="flex justify-end">
-            <button class="btn btn-primary" wire:click="getRecommendations">Filtreaza</button>
+            <button class="btn btn-primary" wire:click="getRecommendations">Filter</button>
         </div>
     </div>
     <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 w-full flex-1 mt-5">
-        <h2 class="text-2xl font-bold mb-4">Rezultate</h2>
+        <h2 class="text-2xl font-bold mb-4">Results</h2>
 
         <div class="gap-4 w-full flex flex-col">
             @if ($users->isEmpty())
-                <p class="text-gray-400">Nu am gasit utilizatori care sa corespunda criteriilor tale.</p>
+                <p class="text-gray-400">No users found matching your criteria.</p>
             @else
                 @foreach ($users as $user)
                     <div class="bg-gray-700 p-4 rounded-lg shadow-md w-full flex flex-row">
@@ -68,8 +68,8 @@
                                 @endforeach
                             </div>
                         </div>
-                        <button class="btn btn-primary ml-auto" wire:click="showUserModal({{ $user->id }})">Trimite
-                            cerere</button>
+                        <button class="btn btn-primary ml-auto" wire:click="showUserModal({{ $user->id }})">Send
+                            request</button>
                     </div>
                 @endforeach
             @endif
@@ -151,10 +151,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             new TomSelect("#sort", {
                 allowEmptyOption: true,
-                placeholder: "Sorteaza dupa",
+                placeholder: "Sort by",
                 render: {
                     no_results: function() {
-                        return '<p>Niciun rezultat gasit</p>';
+                        return '<p>No results found</p>';
                     }
                 },
             });

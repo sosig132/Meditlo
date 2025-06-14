@@ -6,7 +6,7 @@
     </div>
     <div class="md:w-1/2">
         <div class="flex items-center justify-center h-screen color-white flex-col">
-            <h1 class="text-6xl font-bold text-white">Bun venit!</h1>
+            <h1 class="text-6xl font-bold text-white">Welcome!</h1>
             <p class="text-2xl text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
         </div>
     </div>

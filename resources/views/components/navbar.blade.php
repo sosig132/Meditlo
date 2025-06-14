@@ -40,7 +40,7 @@
                 <livewire:notifications />
             </div>
             <div class="dropdown dropdown-end">
-                <livewire:messages />
+                <livewire:messages :key="'messages-'.time()" />
             </div>
         @endauth
         {{-- Profile icon --}}
