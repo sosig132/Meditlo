@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\RatingService;
+use App\Models\Notification;
+use App\Notifications\MatchRequestNotification;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class Home extends Component
 {
+  use LivewireAlert;
   public $personName = "";
   public $optionsSubjects = [];
   public $optionsLevels = [];
@@ -140,10 +144,23 @@ class Home extends Component
 
   public function sendMatchRequest($userId)
   {
+    $receiver = User::find($userId);
+    if (!$receiver) return;
+
+    // Check if notification already exists
+    if ($receiver->notifications()
+        ->where('type', MatchRequestNotification::class)
+        ->where('data->sender_id', $this->userId)
+        ->where('data->receiver_id', $userId)
+        ->where('data->status', 'pending')
+        ->exists()) {
+        $this->alert('error', 'Match request already sent');
+        return;
+    }
+
+    $this->alert('success', 'Match request sent successfully');
     $this->dispatch('matchRequestSent', $userId);
   }
-
-  //TODO: make sorts. for relevance, the rating portion should be calculated using Bayesian average, maybe with an exponential decay factor, or if time doesn't allow, just use recent rating weighting
 
   public function sortUsers()
   {

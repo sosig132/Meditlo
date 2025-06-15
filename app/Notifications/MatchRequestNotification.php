@@ -41,7 +41,7 @@ class MatchRequestNotification extends Notification implements ShouldQueue
       'sender_id' => $this->senderId,
       'receiver_id' => $notifiable->id,
       'status' => 'pending',
-      'message' => "New request from user <a href='/profile/{$this->senderId}' >{$this->senderName}!</a>",
+      'message' => "New request from user <a href='/profile/{$this->senderId}'>{$this->senderName}!</a>",
     ]);
   }
 }

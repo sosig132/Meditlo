@@ -121,7 +121,7 @@
                         <x-form wire:submit.prevent="sendMatchRequest({{ $modalUser?->id }})">
                             <x-slot:actions>
                                 <x-button onclick="user_modal.close()" label="Cancel" />
-                                <x-button label="Trimite cerere" class="btn-primary" type="submit"
+                                <x-button onclick="user_modal.close()" label="Send request" class="btn-primary" type="submit"
                                     spinner="sendMatchRequest" />
                             </x-slot:actions>
                         </x-form>
