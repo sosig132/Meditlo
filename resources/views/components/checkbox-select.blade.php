@@ -9,7 +9,7 @@
 </div>
 @script
     <script type="module">
-        new TomSelect("#subjects", {
+        const subjectsSelect = new TomSelect("#subjects", {
             allowEmptyOption: true,
             sortField: {
                 field: 'text',
@@ -26,9 +26,18 @@
                     title: 'Remove filter',
                     className: 'p-1'
                 }
+            },
+            onItemAdd: function() {
+                this.placeholder = '';
+            },
+            onItemRemove: function() {
+                if (this.items.length === 0) {
+                    this.placeholder = "Subject";
+                }
             }
         });
-        new TomSelect("#levels", {
+        
+        const levelsSelect = new TomSelect("#levels", {
             allowEmptyOption: true,
             sortField: {
                 field: 'text',
@@ -45,9 +54,18 @@
                     title: 'Remove filter',
                     className: 'p-1'
                 }
+            },
+            onItemAdd: function() {
+                this.placeholder = '';
+            },
+            onItemRemove: function() {
+                if (this.items.length === 0) {
+                    this.placeholder = "Level";
+                }
             }
         });
-        new TomSelect("#styles", {
+        
+        const stylesSelect = new TomSelect("#styles", {
             allowEmptyOption: true,
             sortField: {
                 field: 'text',
@@ -64,7 +82,17 @@
                     title: 'Remove filter',
                     className: 'p-1'
                 }
+            },
+            onItemAdd: function() {
+                this.placeholder = '';
+            },
+            onItemRemove: function() {
+                if (this.items.length === 0) {
+                    this.placeholder = "Learning style";
+                }
             }
         });
+
+        
     </script>
 @endscript

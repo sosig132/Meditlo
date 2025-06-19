@@ -71,3 +71,11 @@
 .checkbox-select.single .item {
   color: #9ca3af;
 }
+
+.ts-wrapper input{
+  font-size: 15px;
+}
+
+.ts-wrapper input::placeholder {
+  font-size: 15px;
+}
