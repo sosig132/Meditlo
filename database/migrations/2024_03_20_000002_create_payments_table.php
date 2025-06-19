@@ -32,7 +32,6 @@ return new class extends Migration
             $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('tutor_id')->references('id')->on('users')->onDelete('cascade');
 
-            // Indexes for better query performance
             $table->index(['session_id', 'student_id']);
             $table->index(['tutor_id', 'status']);
             $table->index('status');
