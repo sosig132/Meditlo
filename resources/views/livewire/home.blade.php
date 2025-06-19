@@ -11,6 +11,7 @@
             <div class="w-1/3 sm:w-1/5 min-w-[200px] bg-gray-800">
                 <x-checkbox-select :options="$optionsStyles" type="styles" wireModel="selectedStyles" />
             </div>
+            @student
             <div class="w-1/3 sm:w-1/5 min-w-[200px] bg-gray-800">
                 <div wire:ignore class="border input-primary rounded">
                     <select id="sort" wire:model="sortBy" class="checkbox-select"
@@ -21,6 +22,7 @@
                     </select>
                 </div>
             </div>
+            @endstudentl
         </div>
         <div class="flex justify-end">
             <button class="btn btn-primary" wire:click="getRecommendations">Filter</button>
