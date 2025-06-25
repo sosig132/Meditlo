@@ -16,7 +16,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 class Home extends Component
 {
   use LivewireAlert;
-  public $personName = "";
+  public $courseName = "";
   public $optionsSubjects = [];
   public $optionsLevels = [];
   public $optionsStyles = [];
@@ -90,7 +90,7 @@ class Home extends Component
 
   protected function filteredUsers($role)
   {
-    $users = $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->personName, $role);
+    $users = $this->user_model->filterUsers($this->selectedSubjects, $this->selectedLevels, $this->selectedStyles, $this->courseName, $role);
     return $users->filter(function ($user) {
       return $user->profile && !User::checkIfStudentIsInTutorList(Auth::id(), $user->id) && !User::checkIfStudentIsInTutorList($user->id, Auth::id());
     });

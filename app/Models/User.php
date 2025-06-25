@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
-  use HasApiTokens, HasFactory, Notifiable;
+  use HasApiTokens, HasFactory, Notifiable, Billable;
 
   /**
    * The attributes that are mass assignable.
@@ -158,7 +159,7 @@ class User extends Authenticatable
     return self::where('email', $email)->first();
   }
 
-  public function filterUsers($subjects = null, $levels = null, $styles = null, $name = null, $role = "tutor")
+  public function filterUsers($subjects = null, $levels = null, $styles = null, $course = null, $role = "tutor")
   {
     $query = self::query();
 
@@ -170,7 +171,7 @@ class User extends Authenticatable
       $query->where('role', $role);
     }
 
-    if (empty($subjects) && empty($levels) && empty($styles) && empty($name)) {
+    if (empty($subjects) && empty($levels) && empty($styles) && empty($course)) {
       return $query->get();
     }
 
@@ -191,9 +192,10 @@ class User extends Authenticatable
         $q->whereIn('answer_id', $styles);
       });
     }
-
-    if ($name) {
-      $query->where('name', 'like', '%' . $name . '%');
+    if ($course) {
+      $query->whereHas('tutorSessions', function ($q) use ($course) {
+        $q->where('title', 'like', '%' . $course . '%');
+      });
     }
 
 
@@ -535,22 +537,20 @@ class User extends Authenticatable
       'id',
       'id',
       'session_id'
-    )->where('session_participants.status', 'registered');
+    )->where('session_participants.status', 'registered')->where('session_participants.payment_status', 'paid');
   }
 
   public function upcomingRegisteredSessions()
   {
     return $this->registeredSessions()
       ->where('start_time', '>', now())
-      ->where('status', 'scheduled')
-      ->orderBy('start_time');
+      ->orderBy('start_time')->get();
   }
 
   public function pastRegisteredSessions()
   {
     return $this->registeredSessions()
       ->where('start_time', '<', now())
-      ->whereIn('status', ['completed', 'cancelled'])
-      ->orderByDesc('start_time');
+      ->orderByDesc('start_time')->get();
   }
 }

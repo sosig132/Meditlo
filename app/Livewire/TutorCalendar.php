@@ -25,7 +25,7 @@ class TutorCalendar extends Component
     public $start_time = '';
     public $end_time = '';
     public $type = 'one_on_one';
-    public $max_students = 1;
+    public $max_students = 2;
     public $price = null;
     public $is_recurring = false;
     public $recurrence_pattern = null;
@@ -146,7 +146,7 @@ class TutorCalendar extends Component
             return;
         }
 
-        $this->validate();
+        $this->validate($this->getValidationRules());
 
         $session = TutorSession::create([
             'tutor_id' => auth()->id(),
@@ -178,7 +178,7 @@ class TutorCalendar extends Component
             return;
         }
 
-        $this->validate();
+        $this->validate($this->getValidationRules());
 
         $this->selectedSession->update([
             'title' => $this->title,
@@ -234,6 +234,12 @@ class TutorCalendar extends Component
             return;
         }
 
+        // Check if session has a price and requires payment
+        if ($session->price && $session->price > 0) {
+            // Redirect to payment page
+            return redirect()->route('payment.form', $sessionId);
+        }
+
         try {
             // Check if student has a cancelled registration
             $existingParticipant = $session->participants()
@@ -253,7 +259,7 @@ class TutorCalendar extends Component
                 }
             }
 
-            // Create new registration
+            // Create new registration for free sessions
             $session->participants()->create([
                 'student_id' => auth()->id(),
                 'status' => 'registered',
@@ -330,6 +336,24 @@ class TutorCalendar extends Component
             'type', 'max_students', 'price', 'is_recurring',
             'recurrence_pattern', 'recurrence_end_date', 'selectedSession'
         ]);
+    }
+
+    private function getValidationRules()
+    {
+        $rules = [
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_time' => 'required|date|after:now',
+            'end_time' => 'required|date|after:start_time',
+            'type' => 'required|in:one_on_one,group',
+            'price' => 'nullable|numeric|min:0',
+            'is_recurring' => 'boolean',
+            'max_students' => 'nullable|integer|min:2|max:20',
+            'recurrence_pattern' => 'nullable|in:weekly,biweekly,monthly',
+            'recurrence_end_date' => 'nullable|date|after:start_time',
+        ];
+
+        return $rules;
     }
 
     public function render()

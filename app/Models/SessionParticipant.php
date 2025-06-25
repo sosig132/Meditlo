@@ -15,6 +15,10 @@ class SessionParticipant extends Model
         'student_id',
         'status',
         'notes',
+        'payment_status',
+        'amount_paid',
+        'paid_at',
+        'stripe_payment_intent_id',
     ];
 
     public function session(): BelongsTo
@@ -42,4 +46,20 @@ class SessionParticipant extends Model
         }
         return $this->update(['status' => 'cancelled']);
     }
+
+    public function hasPaid(): bool
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function isPaymentPending(): bool
+    {
+        return $this->payment_status === 'pending';
+    }
+
+    public function isPaymentFailed(): bool
+    {
+        return $this->payment_status === 'failed';
+    }
+
 } 

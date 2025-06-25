@@ -18,10 +18,10 @@ return new class extends Migration
             $table->decimal('platform_fee', 10, 2);
             $table->decimal('tutor_amount', 10, 2);
             $table->string('currency')->default('usd');
-            $table->string('status'); // succeeded, pending, failed, refunded
+            $table->string('status');
             $table->string('payment_method')->nullable();
             $table->json('payment_method_details')->nullable();
-            $table->string('refund_status')->nullable(); // null, pending, completed, failed
+            $table->string('refund_status')->nullable();
             $table->string('stripe_refund_id')->nullable();
             $table->decimal('refund_amount', 10, 2)->nullable();
             $table->timestamp('paid_at')->nullable();

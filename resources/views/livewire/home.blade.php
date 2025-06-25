@@ -1,6 +1,8 @@
 <div class="container mx-auto">
     <div class="bg-gray-800 text-gray-100 shadow-lg rounded-lg p-8 w-full flex-1">
-        <x-input label="Name" wire:model="personName" />
+        @student
+            <x-input label="Course" wire:model="courseName" />
+        @endstudent
         <div class="filters flex flex-row flex-wrap gap-2.5 sm:flex-row sm:space-x-4 mt-4 mb-3">
             <div class="w-1/3 min-w-[200px] sm:w-1/5 bg-gray-800 sm:mb-0 mb-3">
                 <x-checkbox-select :options="$optionsSubjects" type="subjects" wireModel="selectedSubjects" />

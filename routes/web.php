@@ -10,6 +10,8 @@ use App\Livewire\Welcome;
 use App\Livewire\Home;
 use App\Livewire\AnswerQuestions;
 use App\Livewire\Profile;
+use App\Livewire\PaymentForm;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +34,6 @@ Route::get('/reset-password/{token}', ResetPassword::class)->name('reset-passwor
 Route::get('/confirm/{token}', [EmailVerificationController::class, 'verify'])->name('email.verify');
 Route::get('/tutor-dashboard', TutorDashboard::class)->name('tutor-dashboard')->middleware('check.questions');
 Route::get('/student-dashboard', StudentDashboard::class)->name('student-dashboard')->middleware('check.questions');
-
+Route::get('/payment/form/{sessionId}', PaymentForm::class)->name('payment.form')->middleware('check.questions');
 // POST ROUTES (ACTIONS)
 Route::post('/logout', [Logout::class, 'logout'])->name('logout');
