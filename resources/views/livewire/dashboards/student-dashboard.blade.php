@@ -1,6 +1,13 @@
 <div>
     <div class="p-5 flex flex-col gap-4">
-        <h2 class="text-2xl font-semibold">Tutors</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold">Tutors</h2>
+            <button 
+                class="btn btn-primary" 
+                onclick="edit_answers_modal.showModal()">
+                Edit Answers
+            </button>
+        </div>
         <div class="overflow-x-auto">
             <table class="table w-full">
                 <!-- head -->
@@ -71,4 +78,14 @@
             </table>
         </div>
     </div>
+
+    <!-- Edit Answers Modal -->
+    <dialog id="edit_answers_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="modal-box bg-gray-800 text-gray-100">
+            <button onclick="edit_answers_modal.close()" class="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-200 btn btn-ghost">
+                <span class="text-2xl">&times;</span>
+            </button>
+            <livewire:edit-answers />
+        </div>
+    </dialog>
 </div>

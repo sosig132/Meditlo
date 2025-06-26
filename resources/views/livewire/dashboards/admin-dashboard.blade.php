@@ -1,6 +1,20 @@
 <div class="p-5">
     <h1 class="text-center text-3xl">Admin Dashboard</h1>
     <hr class="my-4">
+    
+    <!-- Edit Answers Section -->
+    <div class="mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl">Edit Your Profile Answers</h2>
+            <button 
+                class="btn btn-primary" 
+                onclick="edit_answers_modal.showModal()">
+                Edit Answers
+            </button>
+        </div>
+        <p class="text-gray-600 mb-4">Update your preferences for subjects, learning style, and education level.</p>
+    </div>
+    
     <h2 class="text-2xl mb-4">Answers to profile creation questions</h2>
     <div class="flex flex-col mx-10">
         @foreach ($questions as $questionNumber)
@@ -66,6 +80,16 @@
               <x-button label="Cancel" onclick="delete_user_modal.close()" />
               <x-button label="Delete" class="btn bg-red-800 color-white" wire:click="deleteUser({{$selectedUser}})" onclick="delete_user_modal.close()" />
             </div>
+        </div>
+    </dialog>
+
+    <!-- Edit Answers Modal -->
+    <dialog id="edit_answers_modal" class="modal modal-bottom sm:modal-middle" wire:ignore.self>
+        <div class="modal-box bg-gray-800 text-gray-100">
+            <button onclick="edit_answers_modal.close()" class="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-200 btn btn-ghost">
+                <span class="text-2xl">&times;</span>
+            </button>
+            <livewire:edit-answers />
         </div>
     </dialog>
 
