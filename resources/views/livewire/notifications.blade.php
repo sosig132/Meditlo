@@ -30,7 +30,7 @@
         @endif
 
         <ul x-show="show" x-transition @click.away="show = false"
-            class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-64">
+            class="menu dropdown-content z-[100] p-2 shadow bg-base-100 rounded-box w-64">
             @if (!empty($notifications))
                 @foreach ($notifications as $notification)
                     <li class="notification flex flex-row gap-1"

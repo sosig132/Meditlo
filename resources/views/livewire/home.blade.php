@@ -37,7 +37,8 @@
                 <p class="text-gray-400">No users found matching your criteria.</p>
             @else
                 @foreach ($users as $user)
-                    <div class="bg-gray-700 p-4 rounded-lg shadow-md w-full flex flex-row">
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-md w-full flex flex-col sm:flex-row gap-4 sm:gap-0">
+                      <div class="flex items-center justify-center sm:justify-start flex-row w-full">
                         <div class="avatar h-10 w-10 mr-4">
                             <div class="w-10 rounded-full">
                                 <img src="{{ $user->profile->user_photo ? Storage::url($user->profile->user_photo) : 'https://adaptcommunitynetwork.org/wp-content/uploads/2023/09/person-placeholder-450x330.jpg' }}"
@@ -47,7 +48,7 @@
                         <div class="flex flex-col">
                             <div class="flex flex-row items-center gap-5">
                                 <a href="/profile/{{ $user->id }}">
-                                    <h3 class="text-xl font-semibold mb-1">{{ $user->name }}</h3>
+                                    <h3 class="text-xl font-semibold mb-1 break-all line-clamp-1">{{ $user->name }}</h3>
                                 </a>
                                 @if ($user->role == 'tutor')
                                     <div class="flex items-center gap-1">
@@ -68,7 +69,8 @@
                                 @endforeach
                             </div>
                         </div>
-                        <button class="btn btn-primary ml-auto" wire:click="showUserModal({{ $user->id }})">Send
+                      </div>
+                        <button class="btn btn-primary ml-auto text-xs sm:text-base w-full sm:w-fit" wire:click="showUserModal({{ $user->id }})">Send
                             request</button>
                     </div>
                 @endforeach

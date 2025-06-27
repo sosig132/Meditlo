@@ -107,7 +107,7 @@
         </td>
         <td>{{ $video->title }}</td>
         <td>{{ $video->created_at->format('d-m-Y') }}</td>
-        <td>
+        <td class="flex flex-row gap-2">
           <button wire:click="selectContent({{ $video->id }})" onclick="edit_content_modal.showModal()"
           class="btn btn-primary">Edit</button>
           <button wire:click="selectContentCategories({{ $video->id }})"
@@ -308,7 +308,7 @@
         <td>{{ $document->title }}</td>
         <td>{{ $document->file_type }}</td>
         <td>{{ $document->created_at->format('d-m-Y') }}</td>
-        <td>
+        <td class="flex flex-row gap-2">
           <button wire:click="selectContent({{ $document->id }})" onclick="edit_document_modal.showModal()"
           class="btn btn-primary">Edit</button>
           <button wire:click="selectContentCategories({{ $document->id }})"
