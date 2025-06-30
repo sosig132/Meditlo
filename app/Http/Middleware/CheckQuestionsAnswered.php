@@ -12,7 +12,7 @@ class CheckQuestionsAnswered
     {
         $currentUser = auth()->user();
 
-        if ($currentUser && !$this->checkQuestions($currentUser) && $currentUser->isAdmin() === false) {
+        if ($currentUser && !$this->checkQuestions($currentUser)) {
             return redirect()->route('answer-questions');
         }
         return $next($request);
