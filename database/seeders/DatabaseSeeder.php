@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     private $materii = ["Matematica", "Romana", "Engleza", "Franceza", "Germana", "Istorie", "Geografie", "Biologie", "Fizica", "Chimie", "Informatica", "Economie", "Logica", "Psihologie", "Filosofie", "Muzica", "Desen"];
     private $roles = ["Tutore", "Student"];
     private $type_of_teaching = ["Online", "Fizic"];
+    private $levels = ["Bacalaureat", "Evaluare Nationala"];
     public function run(): void
     {
         // \App\Models\User::factory(10)->create();
@@ -29,8 +30,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'role' => 'admin',
             'password' => bcrypt('admin'),
-
-        ]);
+        ])->with('profile')->create();
 
         // Seed data
         foreach ($this->materii as $materie) {
@@ -55,6 +55,15 @@ class DatabaseSeeder extends Seeder
             DB::table('possible_answers')->insert([
                 'answer' => $type,
                 'question_number' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach ($this->levels as $level) {
+            DB::table('possible_answers')->insert([
+                'answer' => $level,
+                'question_number' => 4,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
