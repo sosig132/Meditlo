@@ -18,10 +18,14 @@ class AnswerQuestions extends Component
     public $allAnswers = [];
     public $hasSelectedAnswers = [];
     public $card_title = [
-        "Doresti sa fii student sau tutore?",
-        "Ce materii te intereseseaza?",
-        "Online sau fata in fata?",
-        "Ce nivel de invatamant te intereseseaza?"
+        // "Doresti sa fii student sau tutore?",
+        // "Ce materii te intereseseaza?",
+        // "Online sau fata in fata?",
+        // "Ce nivel de invatamant te intereseseaza?"
+        "Do you want to be a student or a tutor?",
+        "What subjects are you interested in?",
+        "Online or face-to-face?",
+        "What level of education are you interested in?",
     ];
 
     protected $answersModel;
