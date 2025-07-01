@@ -22,6 +22,8 @@ class Profile extends Component
   public $editingPhone = false;
   public $editingEmail = false;
   public $editingAbout = false;
+  public $editingLocation = false;
+  public $newLocation;
   public $newPhone;
   public $newEmail;
   public $newAboutMe;
@@ -50,6 +52,7 @@ class Profile extends Component
     $this->newEmail = $this->user->email;
     $this->newPhone = $this->user->profile->phone;
     $this->newAboutMe = $this->user->profile->about_me;
+    $this->newLocation = $this->user->profile->location;
     $this->photo = $this->user->profile->user_photo;
     $this->materii = $answers_model->getUserAnswersForQuestion($this->userId, 2);
     $this->stil_invatare = $answers_model->getUserAnswersForQuestion($this->userId, 3);
@@ -177,6 +180,8 @@ class Profile extends Component
       $this->editingEmail = !$this->editingEmail;
     } elseif ($field === 'about_me') {
       $this->editingAbout = !$this->editingAbout;
+    } elseif ($field === 'location') {
+      $this->editingLocation = !$this->editingLocation;
     }
   }
 
@@ -193,6 +198,21 @@ class Profile extends Component
     $this->showAlert($check, "Numarul de telefon");
 
     $this->editingPhone = false;
+  }
+
+  public function updateLocation()
+  {
+    if (Auth::id() != $this->userId) {
+      return;
+    }
+    $this->validate([
+      'newLocation' => 'nullable|string|max:255',
+    ]);
+    $check = \App\Models\Profile::updateProfile(['location' => $this->newLocation], $this->userId);
+
+    $this->showAlert($check, "Locatia");
+
+    $this->editingLocation = false;
   }
 
   public function triggerUpload()
@@ -232,7 +252,7 @@ class Profile extends Component
     $gen = null;
     if ($type == "Numarul de telefon") {
       $gen = "a fost schimbat";
-    } else if ($type == "Descrierea ta" || $type == "Poza de profil") {
+    } else if ($type == "Descrierea ta" || $type == "Poza de profil" || $type == "Locatia") {
       $gen = "a fost schimbata";
     }
 
