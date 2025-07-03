@@ -227,6 +227,7 @@
                         <div class="collapse-content w-full max-w-full max-h-[100vh] min-h-[0] min-w-[0]">
                             <div class="swiper video-swiper-{{ $category['id'] }}">
                                 <div class="swiper-wrapper">
+                                  @if ($category['videos'])
                                     @foreach ($category['videos'] as $video)
                                         <div class="swiper-slide">
                                             <div class="video-card w-fit p-3 rounded btn-ghost cursor-pointer transition duration-300"
@@ -243,6 +244,7 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                  @endif
                                 </div>
                                 <div class="flex items-center gap-8 lg:justify-start justify-center">
                                     <button id="slider-button-left"
@@ -277,6 +279,7 @@
                         <div class="collapse-content w-full max-w-full max-h-[100vh] min-h-[0] min-w-[0]">
                             <div class="swiper doc-swiper-{{ $category['id'] }}">
                                 <div class="swiper-wrapper">
+                                  @if ($category['documents'])
                                     @foreach ($category['documents'] as $document)
                                         <div class="swiper-slide">
                                             <a class="document-card w-fit p-3 rounded btn-ghost cursor-pointer transition duration-300"
@@ -318,6 +321,7 @@
                                             </a>
                                         </div>
                                     @endforeach
+                                  @endif
                                 </div>
                                 <div class="flex items-center gap-8 lg:justify-start justify-center">
                                     <button id="slider-button-left"

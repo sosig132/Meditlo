@@ -39,7 +39,7 @@ class PossibleAnswer extends Model
     }
 
     public static function getTutorAnswerId() {
-        return PossibleAnswer::where('answer', 'Tutore')->value('id');
+        return PossibleAnswer::where('answer', 'Tutor')->value('id');
     }
 
     public static function getStudentAnswerId() {

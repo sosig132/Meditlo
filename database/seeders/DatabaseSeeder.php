@@ -12,10 +12,11 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    private $materii = ["Matematica", "Romana", "Engleza", "Franceza", "Germana", "Istorie", "Geografie", "Biologie", "Fizica", "Chimie", "Informatica", "Economie", "Logica", "Psihologie", "Filosofie", "Muzica", "Desen"];
-    private $roles = ["Tutore", "Student"];
-    private $type_of_teaching = ["Online", "Fizic"];
-    private $levels = ["Bacalaureat", "Evaluare Nationala"];
+    private $subjects = ["Mathematics", "Romanian", "English", "French", "German", "History", "Geography", "Biology", "Physics", "Chemistry", "Computer Science", "Economics", "Logic", "Psychology", "Philosophy", "Music", "Art"];
+    private $roles = ["Tutor", "Student"];
+    private $type_of_teaching = ["Online", "In-person"];
+    private $levels = ["Baccalaureate", "National Evaluation"];
+
     public function run(): void
     {
         \App\Models\User::factory()->has(\App\Models\Profile::factory())->create([
@@ -26,7 +27,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Seed data
-        foreach ($this->materii as $materie) {
+        foreach ($this->subjects as $materie) {
             DB::table('possible_answers')->insert([
                 'answer' => $materie,
                 'question_number' => 2,

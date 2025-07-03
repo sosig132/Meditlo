@@ -11,18 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('conversations', function (Blueprint $table) {
-            // First drop the foreign key constraints
-            $table->dropForeign(['user_one_id']);
-            $table->dropForeign(['user_two_id']);
-            
-            // Then drop the unique index
-            $table->dropUnique(['user_one_id', 'user_two_id']);
-            
-            // Now we can safely drop the columns
-            $table->dropColumn(['user_one_id', 'user_two_id']);
-        });
-
         Schema::create('users_conversations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

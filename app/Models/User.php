@@ -166,7 +166,7 @@ class User extends Authenticatable
     $subjects = PossibleAnswer::whereIn('answer', $subjects)->pluck('id')->toArray();
     $levels = PossibleAnswer::whereIn('answer', $levels)->pluck('id')->toArray();
     $styles = PossibleAnswer::whereIn('answer', $styles)->pluck('id')->toArray();
-
+    $query->where('role', '!=', 'Admin');
     if ($role) {
       $query->where('role', $role);
     }

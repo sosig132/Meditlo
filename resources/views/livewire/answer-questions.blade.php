@@ -1,7 +1,7 @@
 <div class="flex flex-wrap justify-center items-center min-h-screen">
     <div class="bg-white p-6 rounded-lg shadow-lg relative overflow-hidden w-1/3">
         <h2 class="text-xl font-bold mb-4 text-center">{{$card_title[$currentStep]}}</h2>
-
+        
         <div class="relative overflow-hidden">
             <div class="flex transition-transform duration-500 ease-in-out"
             style="transform: translateX(-{{ $currentStep * 100 }}%);">

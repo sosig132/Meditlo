@@ -124,40 +124,6 @@
           @error('price') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
         </div>
 
-        <div class="form-control mb-4">
-          <label class="label cursor-pointer">
-            <span class="label-text text-gray-300">Recurring Session</span>
-            <input type="checkbox" wire:model.defer="is_recurring" class="toggle toggle-primary">
-          </label>
-        </div>
-
-        <div x-data="{ showRecurrence: false }" x-show="$wire.is_recurring" x-transition>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text text-gray-300">Recurrence Pattern</span>
-              </label>
-              <select wire:model.defer="recurrence_pattern"
-                class="select select-bordered w-full bg-gray-700 text-gray-100">
-                <option value="">Select pattern</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Bi-weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
-              <!-- @error('recurrence_pattern') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror -->
-            </div>
-
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text text-gray-300">End Date</span>
-              </label>
-              <input type="date" wire:model.defer="recurrence_end_date"
-                class="input input-bordered bg-gray-700 text-gray-100">
-              <!-- @error('recurrence_end_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror -->
-            </div>
-          </div>
-        </div>
-
         <div class="modal-action">
           <button type="submit" class="btn btn-primary">Create Session</button>
           <button type="button" class="btn" onclick="create_session_modal.close()">Cancel</button>
@@ -285,7 +251,6 @@
     </div>
   </dialog>
 
-  <!-- Session Details Modal -->
   <dialog id="session_details_modal" class="modal" wire:ignore.self>
     <div class="modal-box bg-gray-800 text-gray-100">
       @if($selectedSession)
@@ -425,7 +390,6 @@
     </div>
   </dialog>
 
-  <!-- Include FullCalendar JS -->
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
 
   <script>
@@ -450,10 +414,12 @@
         slotDuration: '00:30:00',
         events: @json($sessions),
         eventClick: function (info) {
-          @this.openDetailsModal(info.event.id);
+          if (@json($this->isStudentOfTutor())) {
+            console.log('Opening session details for student');
+            @this.openDetailsModal(info.event.id);
+          }
         },
         eventDidMount: function (info) {
-          // Add tooltip with available spots
           const spots = info.event.extendedProps.available_spots;
           const type = info.event.extendedProps.type;
           const registered = info.event.extendedProps.registered_count;
@@ -485,12 +451,19 @@
         session_details_modal.showModal();
       });
 
-      // Close modals when Livewire updates
       document.addEventListener('sessionsUpdated', () => {
         create_session_modal.close();
         edit_session_modal.close();
         session_details_modal.close();
       });
     });
+
+    function closeSessionModal() {
+      const sessionDetailsModal = document.getElementById('create_session_modal');
+      if (sessionDetailsModal) {
+        sessionDetailsModal.close();
+      }
+    } 
+    document.addEventListener('closeSessionModal', closeSessionModal);
   </script>
 </div>

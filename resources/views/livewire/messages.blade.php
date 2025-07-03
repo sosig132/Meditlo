@@ -53,7 +53,7 @@
                         @endif
                     </h2>
 
-                    @if (!$selectedChatter && auth()->user()->isTutor())
+                    @if (!$selectedChatter && auth()->user()->isTutor() && auth()->user()->students->count() > 0)
                         <button onclick="create_group_modal.showModal()" wire:key="create-group-modal-{{ auth()->id() }}" class="btn btn-sm btn-ghost">
                             <p>Create Group</p>
                         </button>

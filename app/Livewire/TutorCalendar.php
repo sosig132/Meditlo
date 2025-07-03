@@ -156,7 +156,7 @@ class TutorCalendar extends Component
             'end_time' => $this->end_time,
             'type' => $this->type,
             'max_students' => $this->type === 'group' ? $this->max_students : null,
-            'price' => $this->price,
+            'price' => $this->price ?? null,
             'is_recurring' => $this->is_recurring,
             'recurrence_pattern' => $this->is_recurring ? $this->recurrence_pattern : null,
             'recurrence_end_date' => $this->is_recurring ? $this->recurrence_end_date : null,
@@ -170,6 +170,7 @@ class TutorCalendar extends Component
         $this->resetForm();
         $this->loadSessions();
         $this->alert('success', 'Session created successfully!');
+        $this->dispatch('closeSessionModal');
     }
 
     public function updateSession()
@@ -336,6 +337,20 @@ class TutorCalendar extends Component
             'type', 'max_students', 'price', 'is_recurring',
             'recurrence_pattern', 'recurrence_end_date', 'selectedSession'
         ]);
+    }
+
+    public function isStudentOfTutor()
+    {
+        if (!auth()->check() || !auth()->user()->isStudent()) {
+            return false;
+        }
+
+        $tutor = \App\Models\User::find($this->tutorId);
+        if (!$tutor) {
+            return false;
+        }
+        
+        return !$tutor->students()->where('users.id', auth()->id())->exists();
     }
 
     private function getValidationRules()
