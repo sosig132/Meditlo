@@ -553,4 +553,9 @@ class User extends Authenticatable
       ->where('start_time', '<', now())
       ->orderByDesc('start_time')->get();
   }
+
+  public function stripeAccount()
+  {
+    return $this->hasOne(UserStripeAccount::class, 'user_id');
+  }
 }

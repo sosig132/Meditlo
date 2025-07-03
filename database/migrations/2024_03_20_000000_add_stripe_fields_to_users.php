@@ -8,23 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('stripe_customer_id')->nullable()->index();
-            $table->string('stripe_account_id')->nullable()->index();
-            $table->boolean('stripe_onboarding_completed')->default(false);
-            $table->string('stripe_account_status')->nullable();
-        });
+        // Stripe fields removed from users table. See new migration for user_stripe_accounts table.
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn([
-                'stripe_customer_id',
-                'stripe_account_id',
-                'stripe_onboarding_completed',
-                'stripe_account_status'
-            ]);
-        });
+        // Stripe fields removed from users table. See new migration for user_stripe_accounts table.
     }
 }; 
