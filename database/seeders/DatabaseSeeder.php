@@ -18,19 +18,12 @@ class DatabaseSeeder extends Seeder
     private $levels = ["Bacalaureat", "Evaluare Nationala"];
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-        \App\Models\User::factory()->create([
-
+        \App\Models\User::factory()->has(\App\Models\Profile::factory())->create([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'role' => 'admin',
             'password' => bcrypt('admin'),
-        ])->with('profile')->create();
+        ]);
 
         // Seed data
         foreach ($this->materii as $materie) {
@@ -68,7 +61,6 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-
 
     }
 }

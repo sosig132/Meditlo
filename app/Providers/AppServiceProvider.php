@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 use Illuminate\Support\Facades\Blade;
-
+use Doctrine\DBAL\Types\Type;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,6 +35,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('student', function () {
             return auth()->check() && auth()->user()->isStudent();
         });
-        
+
     }
 }
